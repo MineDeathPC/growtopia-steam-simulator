@@ -233,30 +233,33 @@
         ];
         const items = [
             { name: "steam tubes" },
+			{ name: "steam gear" },
+			{ name: "steam organ" },
             { name: "steam bellows" },
             { name: "steam riser bellows" },
             { name: "steam piston" },
             { name: "steam lifter piston" },
-            { name: "steam collector" },
-            { name: "steam engine" },
-            { name: "steam crank" },
-            { name: "steam crossover" },
+            { name: "steam collector" },            
             { name: "steam funnel up" },
             { name: "steam funnel down" },
             { name: "steam funnel left" },
             { name: "steam funnel right" },
-            { name: "steam gear" },
-            { name: "steam organ" },
+			{ name: "steam crank" },
+			{ name: "steam valve left" },
+			{ name: "steam valve right" },
+			{ name: "steam crossover URDL" },
+			{ name: "steam crossover ULDR" },
+			{ name: "steam scrambler" },       
             { name: "steam pipe" },
+			{ name: "steam vent" },			
             { name: "steam revolver" },
-            { name: "steam scrambler" },
-            { name: "steam stomper" },
-            { name: "steam vent" },
-            { name: "steam valve" },
+			{ name: "steam stomper" },
+			{ name: "steam engine" },           
             { name: "steam door" },
+			{ name: "steam launcher" },
             { name: "steam spikes" },
             { name: "steam lamp" },
-            { name: "steam launcher" },
+           
 			{ name: "copper" }
         ];
 
@@ -294,6 +297,16 @@
             cell.addEventListener('click', () => placeBlock(cell, i));
             grid.appendChild(cell);
         }
+		
+		function changeBlockImage(row, col, image) {
+    const cell = document.getElementById(`grid-cell-${row * 100 + col}`);
+    if (cell && cell.hasChildNodes()) {
+        const img = cell.querySelector('img');
+        if (img) {
+            img.src = image;
+        }
+    }
+}
 
         function placeBlock(cell, i) {
             const row = Math.floor(i / 100);
@@ -314,12 +327,23 @@
                 img.alt = selectedItem.name;
                 cell.appendChild(img);
                 cell.style.border = 'none';
+				
+				//handling how the object should be, depending on block
                 gridData[row][col] = { 
-                    name: selectedItem.name, 
-                    orientation: selectedItem.orientation,
-                    steam: false // Initialize steam status
+                    name: selectedItem.name
                 };
+				
+				//handle valve data
+				if(selectedItem.name.includes("valve")){
+					let _orientation = (selectedItem.name.includes("left"))?"L":"R";
+					gridData[row][col] = new steam_valve(selectedItem.name,_orientation);
+					console.log("valve placed-> "+gridData[row][col].orientation);
+				}
+				
+				
+             
 
+				//block is an activator block, create activator button
                 if (activators.some(a => a.name === selectedItem.name)) {
                     let button = document.createElement("button");
                     button.id = `activator-${i}`;
@@ -329,12 +353,31 @@
                     button.style.left = `${(i % 100) * 40}px`;
 
                     button.addEventListener("click", () => {
-                        //alert(`Activator clicked at index ${i}`); // Alert for debugging  
+                       console.log("activator button active")
                        steamSystem_main(Math.floor(i / 100), i % 100)
                     });
 
                     document.body.appendChild(button);
                 }
+				else if (selectedItem.name.includes("steam crank")) {
+					let crank = new steam_crank(selectedItem.name);
+					gridData[row][col] = crank;
+
+					let button = document.createElement("button");
+					button.id = `activator-${i}`;
+					button.classList.add("activators");
+					button.textContent = "️🔄";
+					button.style.top = `${Math.floor(i / 100) * 40}px`;
+					button.style.left = `${(i % 100) * 40}px`;
+
+					button.addEventListener("click", () => {
+						crank.toggleFlow();
+						changeBlockImage(row, col, crank.getImage());
+						console.log("steam crank rotated");
+					});
+
+					document.body.appendChild(button);
+				}
             }
         }
 
@@ -396,32 +439,61 @@
             });
         }
 
-        const standard_behaviour = [
+        const standard_behaviour = [ 
             "steam tubes",
             "steam bellows" ,
             "steam riser bellows",
             "steam piston",
             "steam lifter piston",
-            "steam gear"
+            "steam gear",
+			
+			"steam valve left",
+			"steam valve right"
+			
         ];
 
-        function adj(row, col) {
-            const adjacent = [];
-            const rows = gridData.length;
-            const cols = gridData[0].length;
-            
-            // Up
-            adjacent.push(row > 0 ? gridData[row - 1][col] || "null" : "null");
-            // Down
-            adjacent.push(row < rows - 1 ? gridData[row + 1][col] || "null" : "null");
-            // Left
-            adjacent.push(col > 0 ? gridData[row][col - 1] || "null" : "null");
-            // Right
-            adjacent.push(col < cols - 1 ? gridData[row][col + 1] || "null" : "null");
-            
-            console.log(adjacent);
-            return adjacent;
-        }
+
+		//get data of blocks adjacent to input (row,col)
+    function adj(row, col) {
+    const adjacent = [];
+    const rows = gridData.length;
+    const cols = gridData[0].length;
+
+    // Up
+    let upBlock = row > 0 ? gridData[row - 1][col] || "null" : "null";
+    if (upBlock !== "null" && upBlock.hasOwnProperty('name') && upBlock.name.includes("valve")) {
+        adjacent.push(upBlock); // If vent is above, allow it
+    } else {
+        adjacent.push(upBlock); // Otherwise, behave as normal
+    }
+
+    // Down
+    let downBlock = row < rows - 1 ? gridData[row + 1][col] || "null" : "null";
+    if (downBlock !== "null" && downBlock.hasOwnProperty('name') && downBlock.name.includes("valve")) {
+        adjacent.push(downBlock); // If vent is below, allow it
+    } else {
+        adjacent.push(downBlock); // Otherwise, behave as normal
+    }
+
+    // Left
+    let leftBlock = col > 0 ? gridData[row][col - 1] || "null" : "null";
+    if (leftBlock !== "null" && leftBlock.hasOwnProperty('name') && leftBlock.name.includes("valve")) {
+        leftBlock = "null"; // If vent is on the left, treat it as null
+    }
+    adjacent.push(leftBlock);
+
+    // Right
+    let rightBlock = col < cols - 1 ? gridData[row][col + 1] || "null" : "null";
+    if (rightBlock !== "null" && rightBlock.hasOwnProperty('name') && rightBlock.name.includes("valve")) {
+        rightBlock = "null"; // If vent is on the right, treat it as null
+    }
+    adjacent.push(rightBlock);
+
+    console.log(adjacent);
+    return adjacent;
+}
+
+
 		
 
 		
@@ -445,6 +517,52 @@
 		}	
 
 
+
+
+
+		class general_steam_component {
+			constructor(name){
+				this.name = name;
+			}
+		}
+		
+		
+		class steam_crank {
+			constructor(name, flow = "vertical") {
+				this.name = name;
+				this.flow = flow;
+			}
+
+			toggleFlow() {
+				if (this.flow === "vertical") {
+					this.flow = "horizontal";
+				} else {
+					this.flow = "vertical";
+				}
+			}
+
+			getImage() {
+				return this.flow == "vertical" ? 'assets/steam-crank.png' : 'assets/steam-crank-horizontal.png';
+			}
+		}
+
+		
+		class steam_valve {
+			constructor(name,orientation){
+				this.name = name;
+				this.orientation = orientation;
+			}
+			switch_orientation(){
+				if(this.orientation == "L"){
+					this.orientation = "R";
+					console.log("new orientation:"+this.orientation)
+				}
+				else if(this.orientation == "R"){
+					this.orientation = "L";
+					console.log("new orientation:"+this.orientation)
+				}
+			}
+		}
 
 
 		let Steam_Puffs = []
@@ -472,6 +590,7 @@
 					const puffElement = document.createElement('div');
 					puffElement.id = "puff-" + this.unique_id
 					puffElement.innerHTML = this.current_direction
+					puffElement.style.opacity = 0.7
 					puffElement.classList.add('steam-puff');
 					puffElement.style.top = '0px'; 
 					puffElement.style.left = '0px'; 
@@ -484,8 +603,13 @@
 		}
 		
 		kill_puff(){
-			Steam_Puffs.splice(Steam_Puffs.indexOf(this),1);
-			document.getElementById("puff-" + this.unique_id).remove();
+			try{
+				Steam_Puffs.splice(Steam_Puffs.indexOf(this),1);
+				document.getElementById("puff-" + this.unique_id).remove();
+			}
+			catch(e){
+				console.log("failed-kill:"+e);
+			}
 		}
 		
 		check_found_spot(){
@@ -526,7 +650,7 @@
 				
 				
 				
-				//currently puff is in funnel block, handle movement from funnel
+				//currently puff is in a funnel block, handle movement from funnel
 				if(getBlockData(this.position.row,this.position.col).name.includes("funnel")){
 					console.log('currently in funnel')
 					
@@ -559,13 +683,63 @@
 					setTimeout(()=>{this.recursive_move()},puff_speed)
 						return;
 				}
-			
+				
+				
+				
+				
+				//currently puff is in a valve block, handle movement from valve
+				if(gridData[this.position.row][this.position.col].name.includes("valve")){
+					console.log("valve encountered")
+					let valve = gridData[this.position.row][this.position.col]
+					
+					
+					//check if exit direction of valve leads to a valid block
+					//check if standard valve behaviour is possible
+					if(ValidArr[valve.orientation]){
+						//valve leads to valid block				
+							console.log('valve attempt valid exit:'+valve.orientation);
+							if(valve.orientation=="L"){
+								this.changePosition("L",this.position.row,this.position.col-1)
+								valve.switch_orientation();
+								console.log("switched orientation:"+valve.orientation)
+							}
+							else if(valve.orientation=="R"){
+								this.changePosition("R",this.position.row,this.position.col+1)
+								valve.switch_orientation();
+								console.log("switched orientation:"+valve.orientation)
+							}							
+					}
+					
+					//if standard behaviour is not possible, leads to invalid
+					//go straight direction
+					else{
+						if(this.current_direction=="U")
+							this.changePosition("U",this.position.row-1,this.position.col);
+						if(this.current_direction=="D")
+							this.changePosition("D",this.position.row+1,this.position.col);
+						if(this.current_direction=="L")
+							this.changePosition("L",this.position.row,this.position.col-1);
+						if(this.current_direction=="R")
+							this.changePosition("R",this.position.row,this.position.col+1);
+							
+						valve.switch_orientation();
+						console.log("switched orientation:"+valve.orientation)
+					}
+					
+					
+
+					
+					
+					this.check_found_spot();
+					setTimeout(()=>{this.recursive_move()},puff_speed)
+					return;
+				}
 				
 			
 
 
 				
-				//prevent back flow of steam
+				//prevent back flow of steam, note applies for collectors, collectors go below this
 				if(this.current_direction=="U"){
 				 ValidArr.D = "null"
 				}
