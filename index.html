@@ -445,6 +445,7 @@
             "steam riser bellows",
             "steam piston",
             "steam lifter piston",
+			"steam crank",
             "steam gear",
 			
 			"steam valve left",
@@ -751,6 +752,40 @@
 				}
 				if(this.current_direction=="R"){
 				 ValidArr.L = "null"
+				}
+				
+				
+				let adj_block = adj(this.position.row,this.position.col)
+				let block;
+				if(this.current_direction=="U"){
+					block = adj_block[0]
+				}
+				if(this.current_direction=="D"){
+					block = adj_block[1]
+				}
+				if(this.current_direction=="L"){
+					block = adj_block[2]
+				}
+				if(this.current_direction=="R"){
+					block = adj_block[3]
+				}
+				
+				//steam crank system to prevent motion to improper crank
+				if(block.hasOwnProperty("name")){
+				if(block.name.includes("crank")){
+					if(this.current_direction=="U"&&block.flow=="horizontal"){
+					 ValidArr.U = "null"
+					}
+					if(this.current_direction=="D"&&block.flow=="horizontal"){
+					 ValidArr.D = "null"
+					}
+					if(this.current_direction=="L"&&block.flow=="vertical"){
+					 ValidArr.L = "null"
+					}
+					if(this.current_direction=="R"&&block.flow=="vertical"){
+					 ValidArr.R = "null"
+					}
+				}
 				}
 				
 				if(ValidArr[this.current_direction]==true){ //can move straight
