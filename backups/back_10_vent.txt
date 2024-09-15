@@ -8,9 +8,9 @@
     <style>
         body {
 		
-            background-image: url("assets/bg2.jpg");
+            background-image: url("assets/bg.jpg");
             background-repeat: repeat;
-            background-size: 5cm;
+            background-size: 15cm;
             margin: 0;
 			
 			
@@ -71,9 +71,10 @@
         }
 
         .grid-cell {
-            width:40px;
-            height:40px;
-            border: 2px groove rgba(60,50,150,0.3);
+            width: 40px;
+            height: 40px;
+            background-color: rgba(100,255,255,0.07);
+            border: 1px solid rgba(60,50,120,0.5);
             position: relative; /* For positioning steam puffs */
             overflow: hidden;
         }
@@ -124,27 +125,29 @@
             font-size: 10px;
         }
 
-        #show_grid_button {
+        #load-button {
             position: fixed;
             top: 10px;
             right: 10px;
             z-index: 20;
             padding: 10px 20px;
-            background-color: violet;
+            background-color: #4CAF50;
 			font-family: 'Roboto Mono', monospace;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 15px;
+            font-size: 14px;
         }
 
-      
+        #load-button input[type="file"] {
+            display: none;
+        }
 
         .activators {
             position: absolute;
             z-index: 1;
-            font-size: 0.5cm;
+            font-size: 0.45cm;
             border: none;
             background: none;
             cursor: pointer;
@@ -153,10 +156,8 @@
 
         .activators:hover {
           opacity:1;
-		  font-size: 0.53cm;
+		  font-size: 0.5cm;
         }
-		
-	
 		
 		
 		
@@ -168,66 +169,17 @@
     <div id="inv-cont">
         <div id="inv"></div>
     </div>
-	
-	
-	
-   
 
     <div id="grid"></div>
 
     <!-- Hint text for showing inventory -->
     <button id="toggle-hint" onclick="toggleInventory()">Tap or press I to open/close Inventory</button>
-	
-	
 
     <!-- Load JSON Button -->
-    <button id="show_grid_button" alt="toggle grid" onclick="mobileToggle()">Toggle Grid (G)</button>
-   
-	
+    <button id="load-button" alt="ctrl+s to save json">Load JSON</button>
+    <input type="file" id="file-input" accept=".json" style="display: none;">
 
     <script>
-	
-		let grid_view_toggle = false;
-
-		function showGridBorder() {
-			Array.from(document.getElementsByClassName("grid-cell")).forEach((e)=>{
-				e.style.border = "2px groove rgba(0,0,0,0)"
-			})
-		}
-
-		function hideGridBorder() {
-		Array.from(document.getElementsByClassName("grid-cell")).forEach((e)=>{
-			 e.style.border = "2px groove  rgba(60,50,150,0.3)"
-			 })
-		}
-
-
-		document.addEventListener('keydown', function(event) {
-			if (event.key === 'g' || event.key === 'G') {
-				grid_view_toggle = !grid_view_toggle;
-				if (grid_view_toggle) {
-					showGridBorder()
-				} else {
-					hideGridBorder()
-				}
-			}
-		});
-		
-		
-		function mobileToggle(){
-		grid_view_toggle = !grid_view_toggle;
-				if (grid_view_toggle) {
-					showGridBorder()
-				} else {
-					hideGridBorder()
-				}
-		}
-	
-	
-	
-	
-	
-	
 		function unique(length) {
 		let result = '';
 		const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -474,6 +426,7 @@
                     });
 
                     document.body.appendChild(button);
+					button.style.fontSize = "0.8cm"
 					button.style.opacity = "0.9"
                 }
 				
@@ -613,12 +566,12 @@
 		
 		//steam vent class
 		class steam_vent {
-			constructor(name, state = "off", vent_direction) {
-			this.name = name;
-			this.state = state;
-			this.vent_direction = vent_direction;
-			this.timeout = null;  // Keep track of the timeout
-		}
+    constructor(name, state = "off", vent_direction) {
+        this.name = name;
+        this.state = state;
+        this.vent_direction = vent_direction;
+        this.timeout = null;  // Keep track of the timeout
+    }
 
     // Activate function to turn on the vent, wait, then turn it off
     activate(row, col) {

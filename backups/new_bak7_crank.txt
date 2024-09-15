@@ -8,9 +8,9 @@
     <style>
         body {
 		
-            background-image: url("assets/bg2.jpg");
+            background-image: url("assets/bg.jpg");
             background-repeat: repeat;
-            background-size: 5cm;
+            background-size: 15cm;
             margin: 0;
 			
 			
@@ -71,9 +71,10 @@
         }
 
         .grid-cell {
-            width:40px;
-            height:40px;
-            border: 2px groove rgba(60,50,150,0.3);
+            width: 40px;
+            height: 40px;
+            background-color: rgba(100,255,255,0.07);
+            border: 1px solid rgba(60,50,120,0.5);
             position: relative; /* For positioning steam puffs */
             overflow: hidden;
         }
@@ -124,27 +125,29 @@
             font-size: 10px;
         }
 
-        #show_grid_button {
+        #load-button {
             position: fixed;
             top: 10px;
             right: 10px;
             z-index: 20;
             padding: 10px 20px;
-            background-color: violet;
+            background-color: #4CAF50;
 			font-family: 'Roboto Mono', monospace;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 15px;
+            font-size: 14px;
         }
 
-      
+        #load-button input[type="file"] {
+            display: none;
+        }
 
         .activators {
             position: absolute;
             z-index: 1;
-            font-size: 0.5cm;
+            font-size: 0.55cm;
             border: none;
             background: none;
             cursor: pointer;
@@ -153,10 +156,8 @@
 
         .activators:hover {
           opacity:1;
-		  font-size: 0.53cm;
+		  font-size: 0.58cm;
         }
-		
-	
 		
 		
 		
@@ -168,66 +169,17 @@
     <div id="inv-cont">
         <div id="inv"></div>
     </div>
-	
-	
-	
-   
 
     <div id="grid"></div>
 
     <!-- Hint text for showing inventory -->
     <button id="toggle-hint" onclick="toggleInventory()">Tap or press I to open/close Inventory</button>
-	
-	
 
     <!-- Load JSON Button -->
-    <button id="show_grid_button" alt="toggle grid" onclick="mobileToggle()">Toggle Grid (G)</button>
-   
-	
+    <button id="load-button" alt="ctrl+s to save json">Load JSON</button>
+    <input type="file" id="file-input" accept=".json" style="display: none;">
 
     <script>
-	
-		let grid_view_toggle = false;
-
-		function showGridBorder() {
-			Array.from(document.getElementsByClassName("grid-cell")).forEach((e)=>{
-				e.style.border = "2px groove rgba(0,0,0,0)"
-			})
-		}
-
-		function hideGridBorder() {
-		Array.from(document.getElementsByClassName("grid-cell")).forEach((e)=>{
-			 e.style.border = "2px groove  rgba(60,50,150,0.3)"
-			 })
-		}
-
-
-		document.addEventListener('keydown', function(event) {
-			if (event.key === 'g' || event.key === 'G') {
-				grid_view_toggle = !grid_view_toggle;
-				if (grid_view_toggle) {
-					showGridBorder()
-				} else {
-					hideGridBorder()
-				}
-			}
-		});
-		
-		
-		function mobileToggle(){
-		grid_view_toggle = !grid_view_toggle;
-				if (grid_view_toggle) {
-					showGridBorder()
-				} else {
-					hideGridBorder()
-				}
-		}
-	
-	
-	
-	
-	
-	
 		function unique(length) {
 		let result = '';
 		const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -273,16 +225,12 @@
                 saveGrid();
             }
         });
-		
-		
-		
-		//important constants
-		const puff_speed = 100;//0.1s (default)
-		const max_puff_distance = 99;//99 (based on actual game)
-		const global_collector_max_duration = 10;
-		const global_vent_max_duration = 3000 //3 sec
 
-        
+        const activators = [
+            { name: "steam engine" },
+            { name: "steam revolver" },
+            { name: "steam stomper" }
+        ];
         const items = [
             { name: "steam tubes" },
 			{ name: "steam gear" },
@@ -302,13 +250,11 @@
 			{ name: "steam crossover URDL" },
 			{ name: "steam crossover ULDR" },
 			{ name: "steam scrambler" },       
-            { name: "steam pipe",hide:null},
-			{ name: "steam vent L" },     
-			{ name: "steam vent R" },   	
+            { name: "steam pipe" },
+			{ name: "steam vent" },			
             { name: "steam revolver" },
 			{ name: "steam stomper" },
-			{ name: "steam engine L" },     
-			{ name: "steam engine R" },   			
+			{ name: "steam engine" },           
             { name: "steam door" },
 			{ name: "steam launcher" },
             { name: "steam spikes" },
@@ -316,44 +262,6 @@
            
 			{ name: "copper" }
         ];
-		
-		
-		
-		  const standard_behaviour = [ 
-            "steam tubes",
-            "steam bellows" ,
-            "steam riser bellows",
-            "steam piston",
-            "steam lifter piston",		
-            "steam gear",
-			
-			
-			"steam valve left",
-			"steam valve right",
-			"steam crank",
-			"steam collector",
-			"steam crossover URDL",
-			"steam crossover ULDR",
-			"steam vent L",
-			"steam vent R",
-			
-			"steam door" 
-        ];
-		
-		
-		const activators = [    
-            { name: "steam revolver" },
-            { name: "steam stomper" },
-			{ name: "steam engine L" },
-			{ name: "steam engine R" },
-			
-			{ name: "steam door" }
-        ];
-		
-		const single_powered = [    
-            { name: "steam door" }
-        ];
-
 
         let selectedItem = null;
         let gridData = Array.from({ length: 100 }, () => Array(100).fill(null)); // 2D array for grid
@@ -363,10 +271,6 @@
         const fileInput = document.getElementById('file-input');
 
         items.forEach(item => {
-			if(item.hasOwnProperty("hide")){
-				return; //equal to continue in forEach
-				}
-				
             const div = document.createElement('div');
             div.classList.add('inv-item');
             
@@ -411,19 +315,17 @@
 		
 		
 		
-		//changing image of a block in grid at row,col
+		
 		function changeBlockImage(row, col, image) {
-			const cell = document.getElementById(`grid-cell-${row * 100 + col}`);
-			if (cell && cell.hasChildNodes()) {
-				const img = cell.querySelector('img');
-				if (img) {
-					img.src = image;
-				}
-			}
-		}
+    const cell = document.getElementById(`grid-cell-${row * 100 + col}`);
+    if (cell && cell.hasChildNodes()) {
+        const img = cell.querySelector('img');
+        if (img) {
+            img.src = image;
+        }
+    }
+}
 
-
-		//main function to handle placing blocks on the grid
         function placeBlock(cell, i) {
             const row = Math.floor(i / 100);
             const col = i % 100;
@@ -460,25 +362,22 @@
              
 
 				//block is an activator block, create activator button
-                if (activators.some(a => a.name === selectedItem.name)&&!selectedItem.name.includes(" door")&&!selectedItem.name.includes(" crank")&&!selectedItem.name.includes(" vent")) {
+                if (activators.some(a => a.name === selectedItem.name)) {
                     let button = document.createElement("button");
                     button.id = `activator-${i}`;
                     button.classList.add("activators");
                     button.textContent = "▶️";
-					
                     button.style.top = `${Math.floor(i / 100) * 40}px`;
                     button.style.left = `${(i % 100) * 40}px`;
+
                     button.addEventListener("click", () => {
                        console.log("activator button active")
                        steamSystem_main(Math.floor(i / 100), i % 100)
                     });
 
                     document.body.appendChild(button);
-					button.style.opacity = "0.9"
                 }
-				
-				//placing a steam crank
-				if (selectedItem.name.includes("steam crank")) {
+				else if (selectedItem.name.includes("steam crank")) {
 					let crank = new steam_crank(selectedItem.name);
 					gridData[row][col] = crank;
 
@@ -497,47 +396,83 @@
 
 					document.body.appendChild(button);
 				}
-				
-				//placing a steam door
-				if (selectedItem.name.includes("door")) {
-					console.log('steam door placed');
-					let door = new steam_door(selectedItem.name, "closed", row, col);
-					gridData[row][col] = door; // Store the door in the grid
-
-					let button = document.createElement("button");
-					button.id = `activator-${i}`;
-					button.classList.add("activators");
-					button.textContent = "️🔘";
-					button.style.top = `${Math.floor(i / 100) * 40}px`;
-					button.style.left = `${(i % 100) * 40}px`;
-
-					// Add event listener to toggle the state
-					button.addEventListener("click", () => {
-						let currentDoor = gridData[row][col]; // Get the existing door from the grid
-						currentDoor.toggleState(); // Toggle the door's state
-						changeBlockImage(row, col, currentDoor.getImage()); // Update the image
-						console.log("steam door state changed: " + currentDoor.state);
-					});
-
-					document.body.appendChild(button);
-				}
-				
-				if (selectedItem.name.includes("vent")) {
-				    let vent_direction = (selectedItem.name.includes("L")?"L":"R");
-					console.log("vent placed + "+ vent_direction);
-					let vent = new steam_vent(selectedItem.name, "off",vent_direction);
-					
-					gridData[row][col] = vent; // Store the vent in the grid
-				}
-
-				
-				
             }
         }
 
-   
+        function saveGrid() {
+            const gridJson = JSON.stringify(gridData);
+            const blob = new Blob([gridJson], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'grid.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
 
-      
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    gridData = JSON.parse(reader.result);
+                    updateGridFromData();
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function updateGridFromData() {
+            gridData.forEach((row, r) => {
+                row.forEach((cell, c) => {
+                    const cellDiv = grid.children[r * 100 + c];
+                    if (cellDiv) {
+                        if (cell) {
+                            cellDiv.innerHTML = '';
+                            const img = document.createElement('img');
+                            img.src = "assets/" + cell.name.toLowerCase().replaceAll(" ", "-") + ".png";
+                            img.alt = cell.name;
+                            cellDiv.appendChild(img);
+
+                            if (activators.some(a => a.name === cell.name)) {
+                                let button = document.createElement("button");
+                                button.id = `activator-${r * 100 + c}`;
+                                button.classList.add("activators");
+                                button.textContent = "▶️";
+                                button.style.top = `${r * 40}px`;
+                                button.style.left = `${c * 40}px`;
+
+                                button.addEventListener("click", () => {
+                                    
+                                    steamSystem_main(r, c)
+                                });
+                                document.body.appendChild(button);
+                            }
+                        } else {
+                            cellDiv.innerHTML = '';
+                            cellDiv.style.border = '1px solid rgba(60,50,120,0.5)';
+                        }
+                    }
+                });
+            });
+        }
+
+        const standard_behaviour = [ 
+            "steam tubes",
+            "steam bellows" ,
+            "steam riser bellows",
+            "steam piston",
+            "steam lifter piston",		
+            "steam gear",
+			
+			
+			"steam valve left",
+			"steam valve right",
+			"steam crank",
+			"steam collector"
+			
+        ];
+
 
 		//get data of blocks adjacent to input (row,col)
 		function adj(row, col) {
@@ -598,7 +533,6 @@
 
 
 		
-		
 
 		
 		//unused template
@@ -607,68 +541,6 @@
 				this.name = name;
 			}
 		}
-		
-		
-		
-		
-		//steam vent class
-		class steam_vent {
-			constructor(name, state = "off", vent_direction) {
-			this.name = name;
-			this.state = state;
-			this.vent_direction = vent_direction;
-			this.timeout = null;  // Keep track of the timeout
-		}
-
-    // Activate function to turn on the vent, wait, then turn it off
-    activate(row, col) {
-        // Always reset vent duration on activation
-        console.log('vent activated, resetting duration');
-
-        // Turn the vent "on"
-        this.state = "on";
-        changeBlockImage(row, col, "assets/steam-vent-" + this.vent_direction + "-on.png");
-        
-        // Clear any existing timeout to avoid multiple overlapping timeouts
-        if (this.timeout) {
-            clearTimeout(this.timeout);
-            console.log('previous vent timeout cleared');
-        }
-
-        // Set a new timeout to turn off the vent after the specified duration
-        this.timeout = setTimeout(() => {
-            this.state = "off";
-            changeBlockImage(row, col, "assets/steam-vent-" + this.vent_direction + ".png");
-            console.log('vent off');
-            this.timeout = null;  // Reset the timeout variable
-        }, global_vent_max_duration);  // Use the global vent duration
-    }
-}
-
-		
-		
-		
-		
-		
-		//steam door class
-		class steam_door {
-			constructor(name, state, row, col) {
-				this.name = name;
-				this.state = state;
-				this.row = row;
-				this.col = col;
-			}
-
-			toggleState() {
-				this.state = this.state === "closed" ? "open" : "closed";
-			}
-
-			getImage() {
-				return this.state === "closed" ? "assets/steam-door.png" : "assets/steam-door-open.png";
-			}
-		}
-
-		
 		
 		
 		//steam crank class
@@ -717,10 +589,12 @@
 		//steam puff mechanics
 		let Steam_Puffs = []
 		const id_length = 5;
-		
+		const puff_speed = 100;//0.1s (default)
+		const max_puff_distance = 99;//99 (based on actual game)
+		const global_collector_max_duration = 10;
 		
 		class Puff {
-			constructor(current_direction,position={row:null,col:null},distance_moved=0,collector_max_duration=global_collector_max_duration,unique_id,foundSpot = false,ele=null){
+			constructor(current_direction,position={row:null,col:null},distance_moved=0,collector_max_duration=global_collector_max_duration,unique_id,foundSpot = false){
 				this.current_direction = current_direction;
 				this.position = position
 				this.unique_id = unique(id_length);
@@ -728,7 +602,6 @@
 				this.collector_max_duration = collector_max_duration;
 				this.generate_puff(this.position.row,this.position.col)	
 				this.foundSpot = foundSpot;
-				this.ele = ele;
 			}
 			
 			//generate a new steam puff visually
@@ -744,7 +617,6 @@
 					puffElement.style.top = '0px'; 
 					puffElement.style.left = '0px'; 
 					this.distance_moved+=1
-					this.ele = puffElement;
 					Steam_Puffs.push(this);
 					cell.appendChild(puffElement)
 					setTimeout(()=>{this.recursive_move()},puff_speed)
@@ -755,14 +627,14 @@
 		
 		
 		//method to kill puff
-		kill_puff(){	
-		try{
-				console.log(document.getElementById("puff-" + this.unique_id))
+		kill_puff(){
+			try{
+				Steam_Puffs.splice(Steam_Puffs.indexOf(this),1);
 				document.getElementById("puff-" + this.unique_id).remove();
-				Steam_Puffs.splice(Steam_Puffs.indexOf(Steam_Puffs.filter(a=>a.unique_id==this.unique_id)[0]),1);
-				}
-				catch(e){return}
-				return;
+			}
+			catch(e){
+				console.log("failed-kill:"+e);
+			}
 		}
 		
 		//method to check if puff has found a spot to move to, if not kill the puff
@@ -773,15 +645,12 @@
 					this.kill_puff();
 					return;
 				}
-				
 		}
 		
 		
 		
 		//recursive motion function
 			recursive_move(){
-			
-						
 				this.foundSpot = false; 
 				
 				console.log('moved/max:'+this.distance_moved+"/"+max_puff_distance)
@@ -808,78 +677,6 @@
 				  R: adjCells[3] !== null && adjCells[3] !== undefined && adjCells[3].hasOwnProperty('name') &&
 					 (standard_behaviour.includes(adjCells[3].name) || adjCells[3].name.includes("funnel"))  // right
 				};
-				
-				
-				
-				
-			
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				//ULDR steam crossover handler
-				if (gridData[this.position.row][this.position.col].name.includes("ULDR")) {
-					console.log("Currently in ULDR crossover");
-
-					// Check if adjacent cells are valid before changing direction
-					if (this.current_direction == "U" && ValidArr["R"]) {
-						this.changePosition("R", this.position.row, this.position.col+1);
-					} else if (this.current_direction == "D" && ValidArr["L"]) {
-						this.changePosition("L", this.position.row, this.position.col-1);
-					} else if (this.current_direction == "L" && ValidArr["D"]) {
-						this.changePosition("D", this.position.row+1, this.position.col);
-					} else if (this.current_direction == "R" && ValidArr["U"]) {
-						this.changePosition("U", this.position.row-1, this.position.col);
-					} else {
-						// If no valid move, kill the puff
-						this.kill_puff();
-					}
-
-					this.check_found_spot();
-					setTimeout(() => { this.recursive_move(); }, puff_speed);
-					return;
-				}
-				
-							
-				// URDL steam crossover handler
-				if (gridData[this.position.row][this.position.col].name.includes("URDL")) {
-					console.log("Currently in URDL crossover");
-
-					// Check if adjacent cells are valid before changing direction
-					if (this.current_direction == "U" && ValidArr["L"]) {
-						this.changePosition("L", this.position.row, this.position.col-1);
-					} else if (this.current_direction == "D" && ValidArr["R"]) {
-						this.changePosition("R", this.position.row, this.position.col+1);
-					} else if (this.current_direction == "L" && ValidArr["U"]) {
-						this.changePosition("U", this.position.row-1, this.position.col);
-					} else if (this.current_direction == "R" && ValidArr["D"]) {
-						this.changePosition("D", this.position.row+1, this.position.col);
-					} else {
-						// If no valid move, kill the puff
-						this.kill_puff();
-					}
-
-					this.check_found_spot();
-					setTimeout(() => { this.recursive_move(); }, puff_speed);
-					return;
-				}
-
-				
-				
-				//currently in a steam door block
-				if(gridData[this.position.row][this.position.col].name.includes("door")){
-					gridData[this.position.row][this.position.col].toggleState();
-					document.getElementById("puff-" + this.unique_id).style.opacity = "0"
-					changeBlockImage(this.position.row,this.position.col,gridData[this.position.row][this.position.col].getImage());
-					
-					this.kill_puff();
-					return;
-				}
 				
 				
 				
@@ -920,39 +717,6 @@
 				
 				
 				
-				
-			
-
-
-				
-				//prevent back flow of steam, note applies for collectors, collectors go below this
-				if(this.current_direction=="U"){
-				 ValidArr.D = null
-				}
-				if(this.current_direction=="D"){
-				 ValidArr.U = null
-				}
-				if(this.current_direction=="L"){
-				 ValidArr.R = null
-				}
-				if(this.current_direction=="R"){
-				 ValidArr.L = null
-				}
-				
-				
-					if(adjCells[2].hasOwnProperty("name")&&adjCells[2].name.includes("vent")){
-				    	adjCells[2] = null
-						ValidArr["L"] = null						
-					}
-					if(adjCells[3].hasOwnProperty("name")&&adjCells[3].name.includes("vent")){					
-						adjCells[3] = null
-						ValidArr["R"] = null
-					}
-					
-				
-				
-				
-				
 				//currently puff is in a valve block, handle movement from valve
 				if(gridData[this.position.row][this.position.col].name.includes("valve")){
 					console.log("valve encountered")
@@ -961,16 +725,16 @@
 					
 					//check if exit direction of valve leads to a valid block
 					//check if standard valve behaviour is possible
-					if(ValidArr[valve.orientation]!="null"&&ValidArr[valve.orientation]!=null){
+					if(ValidArr[valve.orientation]){
 						//valve leads to valid block				
 							console.log('valve attempt valid exit:'+valve.orientation);
 							if(valve.orientation=="L"){
-								this.changePosition("L",this.position.row,this.position.col)
+								this.changePosition("L",this.position.row,this.position.col-1)
 								valve.switch_orientation();
 								console.log("switched orientation:"+valve.orientation)
 							}
 							else if(valve.orientation=="R"){
-								this.changePosition("R",this.position.row,this.position.col)
+								this.changePosition("R",this.position.row,this.position.col+1)
 								valve.switch_orientation();
 								console.log("switched orientation:"+valve.orientation)
 							}							
@@ -979,20 +743,14 @@
 					//if standard behaviour is not possible, leads to invalid
 					//go straight direction
 					else{
-						if(this.current_direction=="U"){
-						if(ValidArr["U"]!="null"&&ValidArr["U"]!=null){
-							this.changePosition("U",this.position.row,this.position.col);
-							}
-							}
-							else if(this.current_direction=="D"){
-						if(ValidArr["D"]!="null"&&ValidArr["D"]!=null){
-							this.changePosition("D",this.position.row,this.position.col);
-							}
-							}
-							else{
-								this.kill_puff()
-							}
-						
+						if(this.current_direction=="U")
+							this.changePosition("U",this.position.row-1,this.position.col);
+						if(this.current_direction=="D")
+							this.changePosition("D",this.position.row+1,this.position.col);
+						if(this.current_direction=="L")
+							this.changePosition("L",this.position.row,this.position.col-1);
+						if(this.current_direction=="R")
+							this.changePosition("R",this.position.row,this.position.col+1);
 							
 						valve.switch_orientation();
 						console.log("switched orientation:"+valve.orientation)
@@ -1003,22 +761,29 @@
 					
 					
 					this.check_found_spot();
-					
+					setTimeout(()=>{this.recursive_move()},puff_speed)
+					return;
+				}
+				
+			
+
+
+				
+				//prevent back flow of steam, note applies for collectors, collectors go below this
+				if(this.current_direction=="U"){
+				 ValidArr.D = "null"
+				}
+				if(this.current_direction=="D"){
+				 ValidArr.U = "null"
+				}
+				if(this.current_direction=="L"){
+				 ValidArr.R = "null"
+				}
+				if(this.current_direction=="R"){
+				 ValidArr.L = "null"
 				}
 				
 				
-				
-					
-				
-				
-				
-				
-				
-				
-				
-				
-				//steam crank system to prevent motion to improper crank
-				//obtaining current block infront of steam puff
 				let adj_block = adj(this.position.row,this.position.col)
 				let block;
 				if(this.current_direction=="U"){
@@ -1038,89 +803,19 @@
 				if(block.hasOwnProperty("name")){
 				if(block.name.includes("crank")){
 					if(this.current_direction=="U"&&block.flow=="horizontal"){
-						ValidArr.U = null
+					 ValidArr.U = "null"
 					}
 					if(this.current_direction=="D"&&block.flow=="horizontal"){
-						ValidArr.D = null
+					 ValidArr.D = "null"
 					}
 					if(this.current_direction=="L"&&block.flow=="vertical"){
-						ValidArr.L = null
+					 ValidArr.L = "null"
 					}
 					if(this.current_direction=="R"&&block.flow=="vertical"){
-						ValidArr.R = null
-					}
-					
-					
-				}
-				}
-				
-				
-				
-				if(adj_block[1].hasOwnProperty("flow")){			
-						if(this.current_direction=="L"&&adj_block[1].flow=="horizontal"){
-							ValidArr["D"] = null
-							adj_block[1] = null
-						}
-						if(this.current_direction=="R"&&adj_block[1].flow=="horizontal"){
-							ValidArr["D"] = null
-							adj_block[1] = null
-						}
-					}
-				if(adjCells[0].hasOwnProperty("flow")){			
-						if(this.current_direction=="L"&&adjCells[0].flow=="horizontal"){
-							ValidArr["U"] = null
-							adjCells[0] = null
-						}
-						if(this.current_direction=="R"&&adjCells[0].flow=="horizontal"){
-							ValidArr["U"] = null
-							adjCells[0] = null
-						}
-					}
-					
-					
-				if(adj_block[2].hasOwnProperty("flow")){			
-						if(this.current_direction=="D"&&adj_block[2].flow=="vertical"){
-							ValidArr["L"] = null
-							adj_block[2] = null
-						}
-						if(this.current_direction=="U"&&adj_block[2].flow=="vertical"){
-							ValidArr["L"] = null
-							adj_block[2] = null
-							alert("j")
-						}
-					}
-					
-				if(adj_block[3].hasOwnProperty("flow")){			
-						if(this.current_direction=="D"&&adj_block[3].flow=="vertical"){
-							ValidArr["R"] = null
-							adj_block[3] = null
-						}
-						if(this.current_direction=="U"&&adj_block[3].flow=="vertical"){
-							ValidArr["L"] = null
-							adj_block[3] = null
-						}
-					}
-					
-				
-				
-				
-				//vent system (new)
-				if (gridData[this.position.row][this.position.col].name.includes("vent")) {
-				// Activate the vent
-				gridData[this.position.row][this.position.col].activate(this.position.row, this.position.col);
-					if(ValidArr[this.current_direction]==true){ 
-					if(this.current_direction=="U")
-						this.changePosition("U",this.position.row,this.position.col);
-					if(this.current_direction=="D")
-						this.changePosition("D",this.position.row,this.position.col);
-					}
-					else{
-						this.kill_puff()
+					 ValidArr.R = "null"
 					}
 				}
-				
-				
-				
+				}
 				
 				if(ValidArr[this.current_direction]==true){ //can move straight
 					console.log("straight line motion");
@@ -1261,7 +956,13 @@
 
 
         }
-	
+		
+		const loadButton = document.getElementById('load-button');
+loadButton.addEventListener('click', () => {
+	alert("not currently functional, sorry")
+	return;
+    fileInput.click();
+});
     </script>
 </body>
 </html>
