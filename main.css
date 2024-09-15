@@ -1,0 +1,155 @@
+    body {
+		
+            background-image: url("assets/bg2.jpg");
+            background-repeat: repeat;
+            background-size: 5cm;
+            margin: 0;
+			
+			
+			font-family: 'Roboto Mono', monospace;
+			font-optical-sizing: auto;
+			--font-weight: 400; /* Default weight */
+			--font-style: normal; /* Default style */
+    
+        }
+
+        #inv-cont {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: auto;
+            padding: 0;
+            z-index: 10;
+            background-color: rgba(4,158,129,0.5);
+            border: 10px double darkcyan;
+            border-radius: 20px;
+        }
+
+        #inv {
+            display: grid;
+            grid-template-columns: repeat(13, 50px); /* 13 items per row */
+            gap: 6px;
+            padding: 10px;
+        }
+
+        .inv-item {
+            width: 40px;
+            height: 40px;
+            background-color: darkgrey;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid cyan;
+            border-radius: 5px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .inv-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        #grid {
+            display: grid;
+            grid-template-columns: repeat(100, 40px); /* 100 columns with each cell 40px wide */
+            grid-template-rows: repeat(100, 40px);    /* 100 rows with each cell 40px tall */
+            gap: 1px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        .grid-cell {
+            width:40px;
+            height:40px;
+            border: 2px groove rgba(60,50,150,0.3);
+            position: relative; /* For positioning steam puffs */
+            overflow: hidden;
+        }
+
+        .grid-cell img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+       
+        .steam-puff {
+			position: absolute;
+			font-family: 'Roboto Mono', monospace;
+			width: 100%;
+			height: 100%;
+			background-color: green;
+			opacity: 0.7;
+			color: cyan;
+			font-size: 0.55cm;
+			text-align: center;
+			font-weight: bold;
+			border-radius: 0px;
+			animation: flash 1s linear infinite;
+			pointer-events: none;
+		}
+		
+		@keyframes flash{
+			0%{background-color:green; color: cyan;}
+			50%{background-color:white; color: black;}
+			100%{background-color:green; color: cyan;}
+		}
+
+
+       
+
+        #toggle-hint {
+            display:block;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.3);
+			font-family: 'Roboto Mono', monospace;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 10px;
+        }
+
+        #show_grid_button {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 20;
+            padding: 10px 20px;
+            background-color: violet;
+			font-family: 'Roboto Mono', monospace;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+      
+
+        .activators {
+            position: absolute;
+            z-index: 1;
+            font-size: 0.5cm;
+            border: none;
+            background: none;
+            cursor: pointer;
+			opacity:0.6;
+        }
+
+        .activators:hover {
+          opacity:1;
+		  font-size: 0.53cm;
+        }
+		
+	
+		
+		
+		
+		
