@@ -47,7 +47,8 @@
 	 
      <button id="save_build_button" onclick="saveBuild()">Save Build</button>
 	 <button id="load_build_button" onclick="loadBuild()">Load Build</button>
-    
+	 <button id="load_example_build_button">Load Examples</button>
+    <div id="example-builds-container" style="display:none; position:fixed; width:50%; height:50%; z-index:15; top:50%; left:50%; transform:translate(-50%, -50%); padding:20px; background:white; border:1px solid 	#ccc; box-shadow:0px 0px 10px rgba(0, 0, 0, 0.1);"></div>
 	
 	
 <div class="fixed-text">Created By: <i style="color:rgb(0,255,0);">  MineDeath </i></div>
@@ -64,6 +65,71 @@
 function saveBuild(){swal("404","not implemented yet, sorry!","error")}
 function loadBuild(){swal("404","not implemented yet, sorry!","error")}
 */
+
+
+document.getElementById('load_example_build_button').addEventListener('click', () => {
+    const container = document.getElementById('example-builds-container');
+    container.innerHTML = ''; // Clear previous content
+    container.style.display = 'block';
+
+    // Define the path to your example builds folder
+    const folderPath = 'example_builds/';
+
+    // This function would simulate listing files in the directory.
+    // Note: You need a server to actually serve and list these files.
+    // For static files served by a server, you need to maintain a file list manually or via server-side scripting.
+    
+    // Example file list (normally, you'd fetch this list dynamically from a server)
+    const files = [
+     "nice-house.json",
+	 "nice-idk.json"
+    ];
+
+     files.forEach(file => {
+        const button = document.createElement('button');
+        button.className = 'button';
+        const label = file.split('.')[0].replace(/-/g, ' '); // Convert file name to label
+        button.textContent = label;
+		button.classList.add('examplebutton')
+        button.onclick = () => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', `example_builds/${file}`, true);
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    try {
+                        const data = JSON.parse(xhr.responseText);
+						     const simulatedFile = new File([data], file, { type: 'application/json' });
+                        // Pass the simulated file to the loadFile function
+                        const event = {
+                            target: {
+                                files: [simulatedFile]
+                            }
+                        };
+                        loadFile(event); // Call your loadFile function
+                        console.log('Loaded file content:', data);
+                        // Process and display the JSON data as needed
+                    } catch (error) {
+                        console.error('Error parsing JSON:', error);
+                    }
+                } else {
+                    console.error('Error loading file:', xhr.statusText);
+                }
+            };
+            xhr.onerror = function() {
+                console.error('Request failed');
+            };
+            xhr.send();
+        };
+        container.appendChild(button);
+    });
+});
+
+
+
+
+
+
+
 
 const itemsWithState = ["steam crank", "steam door"];
 

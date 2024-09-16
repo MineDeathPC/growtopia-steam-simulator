@@ -197,31 +197,60 @@
 		}
 		
 		#load_build_button {
-    position: fixed;
-    top: 95px; /* Adjusted to be below the Save Build button */
-    right: 10px;
-    z-index: 20;
-    padding: 10px 20px;
-    background-color: blue; 
-    font-family: 'Roboto Mono', monospace;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 8px;
-}
+			position: fixed;
+			top: 95px; /* Adjusted to be below the Save Build button */
+			right: 10px;
+			z-index: 20;
+			padding: 10px 20px;
+			background-color: blue; 
+			font-family: 'Roboto Mono', monospace;
+			color: white;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			font-size: 8px;
+		}
+		#load_example_build_button {
+			position: fixed;
+			top: 135px; /* Adjusted to be below the Save Build button */
+			right: 10px;
+			width:2.4cm;
+			height:auto;
+			z-index: 20;
+			padding: 10px 20px;
+			background-color: blue; 
+			font-family: 'Roboto Mono', monospace;
+			color: white;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			font-size: 10px;
+			overflow:scroll;
+		
+		}
+		
+		.examplebutton{
+			width:5cm;
+			height:1cm;
+		    font-family: 'Roboto Mono', monospace;
+			font-size:0.4cm;
+			position:relative;
+			left:50%; 
+			transform:translateX(-50%);
+			margin:5px;
+		}
 
-#save_build_button {
-    position: fixed;
-    top: 55px; /* Adjusted to be above the Load Build button */
-    right: 10px;
-    z-index: 20;
-    padding: 10px 20px;
-    background-color: darkgreen; 
-    font-family: 'Roboto Mono', monospace;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 8px;
-}
+	#save_build_button {
+		position: fixed;
+		top: 55px; /* Adjusted to be above the Load Build button */
+		right: 10px;
+		z-index: 20;
+		padding: 10px 20px;
+		background-color: darkgreen; 
+		font-family: 'Roboto Mono', monospace;
+		color: white;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		font-size: 8px;
+	}
