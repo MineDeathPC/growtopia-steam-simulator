@@ -168,7 +168,12 @@
         }
 		
 	
-		
-		
-		
-		
+		.fixed-text {
+			position: fixed;
+			bottom: 10px; 
+			right: 10px;  
+			font-size: 9px; 
+			color:white;
+			font-family: 'Roboto Mono', monospace;
+			font-style:italic;
+		}
