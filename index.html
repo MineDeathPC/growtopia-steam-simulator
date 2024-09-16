@@ -50,20 +50,135 @@
     
 	
 	
-<div class="fixed-text">
-        Created By: MineDeath
-    </div>
+<div class="fixed-text">Created By: <i style="color:rgb(0,255,0);">  MineDeath </i></div>
 	
 <!-- end of all content-->
 </div>
+<input type="file" id="file-input" style="display:none;" onchange="loadFile(event)"/>
 <!-- wait for body to fully load-->
 <script src = "sweetalert.js"></script>
 <script src = "index.js"></script>
 <script>
 
-
+/*
 function saveBuild(){swal("404","not implemented yet, sorry!","error")}
 function loadBuild(){swal("404","not implemented yet, sorry!","error")}
+*/
+
+const itemsWithState = ["steam crank", "steam door"];
+
+// Function to extract the specific state based on the block type
+function getBlockState(block) {
+    if (!block) return null;
+
+    // Handle specific blocks that retain different types of state
+    if (block.name === "steam crank") {
+		console.log("saved+"+block.flow)
+        return block.flow; // Return the flow state for cranks
+    } else if (block.name === "steam door") {
+		console.log("saved+"+block.state)
+        return block.state; // Return the door state for doors (e.g., "open" or "closed")
+    } else {
+        return null; // No state to save for other blocks
+    }
+}
+
+// Save build function
+function saveBuild() {
+	swal("BETA","Saving and loading builds is still in beta development, expect bugs!","warning")
+    const simplifiedGridData = gridData.map(row => 
+        row.map(block => {
+            if (block) {
+                if (itemsWithState.includes(block.name)) {
+				console.log("saved++"+getBlockState(block) )
+                    return { name: block.name, state: getBlockState(block) }; // Save both name and specific state
+                } else {
+                    return { name: block.name }; // Save only the name for other blocks
+                }
+            } else {
+                return null;
+            }
+        })
+    );
+
+    const blob = new Blob([JSON.stringify(simplifiedGridData)], { type: "application/json" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "steam_simulator_build.json";
+    link.click();
+}
+
+// Load build function
+function loadBuild() {
+	swal("BETA","Saving and loading builds is still in beta development, expect bugs!","warning")
+    document.getElementById('file-input').click(); // Trigger file input
+}
+
+// Load build function
+function loadFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const content = e.target.result;
+        try {
+            const loadedGridData = JSON.parse(content);
+            resetGrid(); // Clear the existing grid before loading
+
+            // Apply loaded data to the grid
+            loadedGridData.forEach((row, rowIndex) => {
+                row.forEach((blockData, colIndex) => {
+                    if (blockData) {
+                        selectedItem = { name: blockData.name, orientation: 0 }; // Reset orientation by default
+                        
+                        // Check if the block has a saved state and restore it
+                        if (blockData.state) {
+                            restoreBlockState(blockData, blockData.state, rowIndex, colIndex); // Restore the specific state and update image
+                        }
+
+                        // Use the existing placeBlock function for placing the block
+                        placeBlock(document.getElementById(`grid-cell-${rowIndex * 100 + colIndex}`), rowIndex * 100 + colIndex);
+                    }
+                });
+            });
+        } catch (err) {
+            alert("Failed to load build. Invalid file format.");
+            console.error("Error loading file:", err);
+        }
+    };
+    reader.readAsText(file);
+}
+
+// Function to restore the specific block state during loading
+// Function to restore the specific block state during loading
+// Function to restore the specific block state during loading
+function restoreBlockState(block, state,row=null,col=null) {
+setTimeout(()=>{
+    if (!block) return;
+
+    if (block.name === "steam crank") {
+        gridData[row][col].flow = state; // Set the flow state directly
+        gridData[row][col].updateImg(row,col); // Update the crank image based on the restored flow
+    } else if (block.name === "steam door") {
+         gridData[row][col].state = state; // Set the door state directly
+          gridData[row][col].updateImg(row,col); // Update the door image based on state
+    }
+	},500)
+}
+
+
+// Function to reset the grid visually and in gridData
+function resetGrid() {
+    for (let i = 0; i < 10000; i++) {
+        const cell = document.getElementById(`grid-cell-${i}`);
+        if (cell) {
+            cell.innerHTML = '';
+            cell.style.border = '1px solid rgba(60,50,120,0.5)';
+        }
+    }
+    gridData = Array.from({ length: 100 }, () => Array(100).fill(null)); // Reset gridData
+}
 
 
 		//audio controls
@@ -341,7 +456,7 @@ function loadBuild(){swal("404","not implemented yet, sorry!","error")}
 
 		//main function to handle placing blocks on the grid
 //main function to handle placing blocks on the grid
-		function placeBlock(cell, i) {
+		function placeBlock(cell, i, control="build", saved_value=[]) {
 			const row = Math.floor(i / 100);
 			const col = i % 100;
 
@@ -408,8 +523,13 @@ function loadBuild(){swal("404","not implemented yet, sorry!","error")}
 
 				//placing a steam crank
 				if (selectedItem.name.includes("steam crank")) {
+				
 					let crank = new steam_crank(selectedItem.name);
 					gridData[row][col] = crank;
+					
+					if(control == "load"){
+						gridData[row][col].flow = saved_value[0];
+					}
 
 					let button = document.createElement("button");
 					button.id = `activator-${i}`;
@@ -645,12 +765,15 @@ function loadBuild(){swal("404","not implemented yet, sorry!","error")}
 			getImage() {
 				return this.state === "closed" ? "assets/steam-door.png" : "assets/steam-door-open.png";
 			}
+			updateImg(row,col){
+				changeBlockImage(row,col,this.getImage())
+			}
 		}
 
 		
 		
 		
-		//steam crank class
+		// steam crank class
 		class steam_crank {
 			constructor(name, flow = "vertical") {
 				this.name = name;
@@ -664,11 +787,18 @@ function loadBuild(){swal("404","not implemented yet, sorry!","error")}
 					this.flow = "vertical";
 				}
 			}
+			
+			// Method to update the crank image on the grid
+			updateImg(row, col) {
+				changeBlockImage(row, col, this.getImage()); // Update image based on flow state
+				console.log("flow:"+this.flow+" "+this.getImage())
+			}
 
 			getImage() {
-				return this.flow == "vertical" ? 'assets/steam-crank.png' : 'assets/steam-crank-horizontal.png';
+				return this.flow === "vertical" ? 'assets/steam-crank.png' : 'assets/steam-crank-horizontal.png';
 			}
 		}
+
 
 		
 		
@@ -1079,7 +1209,7 @@ function loadBuild(){swal("404","not implemented yet, sorry!","error")}
 						if(this.current_direction=="U"&&adj_block[2].flow=="vertical"){
 							ValidArr["L"] = null
 							adj_block[2] = null
-							alert("j")
+							
 						}
 					}
 					
