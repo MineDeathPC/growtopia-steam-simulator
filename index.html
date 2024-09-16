@@ -69,8 +69,12 @@ function loadBuild(){swal("404","not implemented yet, sorry!","error")}
 		//audio controls
 		
 		// Create an AudioContext		
-		let audioContext;
-		document.body.onclick = function(){audioContext = new (window.AudioContext || window.webkitAudioContext)()};
+		let audioContext = null;
+		document.body.onclick = function(){
+		if(audioContext)
+			return;
+		audioContext = new (window.AudioContext || window.webkitAudioContext)()
+		};
 
 		// Function to play a tone
 		function playTone(frequency, duration) {
