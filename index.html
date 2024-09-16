@@ -67,6 +67,8 @@ function loadBuild(){swal("404","not implemented yet, sorry!","error")}
 */
 
 
+let selectedItem = null
+
 
 const itemsWithState = ["steam crank", "steam door"];
 
@@ -87,19 +89,21 @@ function getBlockState(block) {
 }
 
 // Save build function
+// Save build function
 function saveBuild() {
-	swal("BETA","Saving and loading builds is still in beta development, expect bugs!","warning")
+    swal("BETA", "Saving and loading builds is still in beta development, expect bugs!", "warning");
+    
     const simplifiedGridData = gridData.map(row => 
         row.map(block => {
             if (block) {
                 if (itemsWithState.includes(block.name)) {
-				console.log("saved++"+getBlockState(block) )
+                    console.log("saved++" + getBlockState(block));
                     return { name: block.name, state: getBlockState(block) }; // Save both name and specific state
                 } else {
                     return { name: block.name }; // Save only the name for other blocks
                 }
             } else {
-                return null;
+                return "null"; // Use the string "null" for empty slots
             }
         })
     );
@@ -112,8 +116,9 @@ function saveBuild() {
 }
 
 // Load build function
+// Load build function
 function loadBuild() {
-	swal("BETA","Saving and loading builds is still in beta development, expect bugs!","warning")
+    swal("BETA", "Saving and loading builds is still in beta development, expect bugs!", "warning");
     document.getElementById('file-input').click(); // Trigger file input
 }
 
@@ -132,7 +137,10 @@ function loadFile(event) {
             // Apply loaded data to the grid
             loadedGridData.forEach((row, rowIndex) => {
                 row.forEach((blockData, colIndex) => {
-                    if (blockData) {
+                    if (blockData == "null") {
+                        blockData = null; // Convert "null" string to null
+                    }
+                    if (blockData!=null&&blockData!="null") {
                         selectedItem = { name: blockData.name, orientation: 0 }; // Reset orientation by default
                         
                         // Check if the block has a saved state and restore it
@@ -152,6 +160,8 @@ function loadFile(event) {
     };
     reader.readAsText(file);
 }
+
+
 
 // Function to restore the specific block state during loading
 // Function to restore the specific block state during loading
@@ -389,7 +399,7 @@ function resetGrid() {
         ];
 
 
-        let selectedItem = null;
+        
         let gridData = Array.from({ length: 100 }, () => Array(100).fill(null)); // 2D array for grid
 
         const inv = document.getElementById('inv');
@@ -460,25 +470,31 @@ function resetGrid() {
 		//main function to handle placing blocks on the grid
 //main function to handle placing blocks on the grid
 		function placeBlock(cell, i, control="build", saved_value=[]) {
+	
+		if(!selectedItem){
+			return
+		}
 			const row = Math.floor(i / 100);
 			const col = i % 100;
 
 			if (cell.hasChildNodes()) {
 				cell.innerHTML = '';
 				cell.style.border = '1px solid rgba(60,50,120,0.5)';
-				gridData[row][col] = null;
+				gridData[row][col] = "null";
 
 				let existingButton = document.getElementById(`activator-${i}`);
 				if (existingButton) {
 					document.body.removeChild(existingButton);
 					existingButton.remove()
 				}
-			} else if (selectedItem) {
+			} else if (selectedItem &&selectedItem.hasOwnProperty("name")) {
+		
 				const img = document.createElement('img');
 				img.src = "assets/" + selectedItem.name.toLowerCase().replaceAll(" ", "-") + ".png";
 				img.alt = selectedItem.name;
 				cell.appendChild(img);
 				cell.style.border = 'none';
+				
 
 				//handling how the object should be, depending on block
 				//this can be overwritten later
@@ -514,11 +530,22 @@ function resetGrid() {
 
 					button.style.top = `${Math.floor(i / 100) * 40}px`;
 					button.style.left = `${(i % 100) * 40}px`;
+					
+				   if(selectedItem.name.includes("stomper")){
 					button.addEventListener("click", () => {
 						console.log("activator button active")
-						console.log(selectedItem.name)
-						steamSystem_main(Math.floor(i / 100), i % 100,	selectedItem.name)
+						console.log(selectedItem.name)			
+						steamSystem_main2(Math.floor(i / 100), i % 100,selectedItem.name)
 					});
+					}
+					
+					if(selectedItem.name.includes("revolver")){
+					button.addEventListener("click", () => {
+						console.log("activator button active")
+						console.log(selectedItem.name)			
+						steamSystem_main(Math.floor(i / 100), i % 100)
+					});
+					}
 
 					document.body.appendChild(button);
 					button.style.opacity = "0.9"
@@ -595,6 +622,8 @@ function resetGrid() {
 				}
 
 			}
+			
+			
 		} 
 
 			  
@@ -1360,10 +1389,48 @@ function resetGrid() {
 		}
 
 		
-			
+		
+		 function steamSystem_main(act_r, act_c) {        
+            console.log(gridData);
+            const adjCells = adj(act_r, act_c);
+
+            
+            adjCells.forEach((cell, index) => {
+                console.log(`Adjacent ${index}: ${cell === "null" ? "null" : cell.name}`);
+            });
+
+			  if (
+			  adjCells[0] !== null && adjCells[0] !== undefined && 
+			  adjCells[0].hasOwnProperty('name') &&
+			  (
+				standard_behaviour.includes(adjCells[0].name) || 
+				adjCells[0].name.includes("funnel")
+			  )
+			) {
+			  //alert('up');
+			  let _puff = new Puff("U", { row: act_r - 1, col: act_c });
+			} 
+			else if (
+			  adjCells[1] !== null && adjCells[1] !== undefined && 
+			  adjCells[1].hasOwnProperty('name') &&
+			  (
+				standard_behaviour.includes(adjCells[1].name) || 
+				adjCells[1].name.includes("funnel")
+			  )
+			) {
+			  //alert('down');
+			  let _puff = new Puff("D", { row: act_r + 1, col: act_c });
+			} 
+			else {
+			  //nowhere to propagate to
+			}
+
+
+
+        }
 			
 
-       function steamSystem_main(act_r, act_c, provider="") {
+       function steamSystem_main2(act_r, act_c, provider="") {
 			console.log(gridData);
 			
 			let adjCells = adj(act_r, act_c); // Get adjacent cells
