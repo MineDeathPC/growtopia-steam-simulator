@@ -1,4 +1,24 @@
-    body {
+  @media only screen and (orientation: portrait) {
+    .content {
+        display: none; /* Hide content */
+    }
+    .orientation-message {
+        display: block; /* Show a message */
+    }
+}
+
+/* Show content when in landscape mode */
+@media only screen and (orientation: landscape) {
+    .content {
+        display: block; /* Show content */
+    }
+    .orientation-message {
+        display: none; /* Hide the message */
+    }
+}
+
+
+  body {
 		
             background-image: url("assets/bg2.jpg");
             background-repeat: repeat;

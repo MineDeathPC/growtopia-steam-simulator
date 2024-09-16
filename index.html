@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="main.css">
 
  <title>Steam Simulator</title>
@@ -20,7 +21,11 @@
 </head>
 
 <body>
-
+  <div class="orientation-message"style="color:white;">
+        Please rotate your device to landscape mode.
+    </div>
+	
+	  <div class="content">
     <div id="inv-cont">
         <div id="inv"></div>
     </div>
@@ -37,7 +42,7 @@
     <button id="show_grid_button" alt="toggle grid" onclick="mobileToggle()">Toggle Grid (G)</button>
    
 	
-
+</div>
 <!-- wait for body to fully load-->
 <script src = "index.js"></script>
 <script>
