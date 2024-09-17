@@ -320,7 +320,9 @@ function resetGrid() {
 		const max_puff_distance = 99;//99 (based on actual game)
 		const global_collector_max_duration = 10;
 		const global_vent_max_duration = 3000 //3 sec
-		const global_organ_max_duration = 100;
+		const global_organ_max_duration = 110;
+		const global_organ_frequency = 500;
+		const global_lamp_max_duration = 10000;
 		
 		//variable puff speed
 		let puff_speed = true_puff_speed ;//0.1s (default)
@@ -371,6 +373,7 @@ function resetGrid() {
             "steam gear",
 			
 			
+			
 			"steam valve left",
 			"steam valve right",
 			"steam crank",
@@ -380,8 +383,11 @@ function resetGrid() {
 			"steam vent L",
 			"steam vent R",
 		    "steam organ",
+			"steam lamp",
+			"steam launcher",
 			
-			"steam door" 
+			"steam door",
+			"steam spikes"
         ];
 		
 		
@@ -391,11 +397,14 @@ function resetGrid() {
 			{ name: "steam engine L" },
 			{ name: "steam engine R" },
 			
-			{ name: "steam door" }
+			
         ];
 		
 		const single_powered = [    
-            { name: "steam door" }
+            { name: "steam door" },
+            { name: "steam spikes" },
+			{ name: "steam lamp" },
+		    { name: "steam launcher" }
         ];
 
 
@@ -611,7 +620,33 @@ function resetGrid() {
 					document.body.appendChild(button);
 					return;
 				}
+				
+				if (selectedItem.name.includes("launcher")) {
+					console.log('steam launcher placed');
+					let launcher = new steam_launcher(selectedItem.name, "off");
+					gridData[row][col] = launcher; // Store the launcher in the grid
 
+					let button = document.createElement("button");
+					button.id = `activator-${i}`;
+					button.classList.add("activators");
+					button.textContent = "️⏮";
+					button.style.top = `${Math.floor(i / 100) * 40}px`;
+					button.style.left = `${(i % 100) * 40}px`;
+
+					// Add event listener to toggle the state
+					button.addEventListener("click", () => {
+						let currentLauncher = gridData[row][col]; // Get the existing launcher from the grid
+						currentLauncher.deactivate() // Toggle the launcher's state
+						currentLauncher.updateImg(row,col)
+						console.log("steam launcher state changed: " + currentLauncher.state);
+					});
+
+					document.body.appendChild(button);
+					return;
+				}
+
+				
+				//placing steam vent
 				if (selectedItem.name.includes("vent")) {
 					let vent_direction = (selectedItem.name.includes("L") ? "L" : "R");
 					console.log("vent placed + " + vent_direction);
@@ -620,6 +655,26 @@ function resetGrid() {
 					gridData[row][col] = vent; // Store the vent in the grid-cell
 					return;
 				}
+				
+				//placing steam spike
+				if (selectedItem.name.includes("spike")) {
+					console.log("spike placed ");
+					let spike = new steam_spike(selectedItem.name, "off");
+					spike.updateImg(row,col);
+					gridData[row][col] = spike; // Store the spike in the grid-cell
+					return;
+				}
+				
+				
+				//placing steam lamp
+				if (selectedItem.name.includes("lamp")) {
+					console.log("lamp placed ");
+					let lamp = new steam_lamp(selectedItem.name, "off");
+					gridData[row][col] = lamp; // Store the lamp in the grid-cell
+					return;
+				}
+				
+				
 
 			}
 			
@@ -696,6 +751,54 @@ function resetGrid() {
 		}
 		
 		
+		//steam spike class
+		class steam_spike {
+			constructor(name,state="off"){
+				this.name = name;
+				this.state = state;
+			}
+			
+			toggleState(){
+				this.state = this.state=="off"?"on":"off";
+			}
+			
+			updateImg(row,col){
+				changeBlockImage(row,col,this.getImage());
+			}
+			
+			getImage(){
+				return this.state=="on"?"assets/steam-spikes.png":"assets/steam-spikes-off.png"
+			}
+		}
+		
+			//steam launcher class
+		class steam_launcher {
+			constructor(name,state="off"){
+				this.name = name;
+				this.state = state;
+			}
+			
+			toggleState(){
+				this.state = this.state=="off"?"on":"off";
+			}
+			
+			activate(){
+				this.state = "on"
+			}
+			deactivate(){
+				this.state = "off"
+			}
+			
+			updateImg(row,col){
+				changeBlockImage(row,col,this.getImage());
+			}
+			
+			getImage(){
+				return this.state=="on"?"assets/steam-launcher-on.png":"assets/steam-launcher.png"
+			}
+		}
+		
+		
 		
 		
 		//steam vent class
@@ -734,6 +837,39 @@ function resetGrid() {
 		
 		
 		
+		class steam_lamp{
+			constructor(name, state = "off") {
+				this.name = name;
+				this.state = state;
+				this.timeout = null; // Keep track of the timeout
+			}
+
+			// Activate function to turn on the lamp, wait, then turn it off
+			activate(row, col) {
+				console.log('lamp activated, resetting duration');
+
+				// Turn the lamp "on"
+				this.state = "on";
+				changeBlockImage(row, col, "assets/steam-lamp-on.png");
+
+				// Clear any existing timeout to avoid multiple overlapping timeouts
+				if (this.timeout) {
+					clearTimeout(this.timeout);
+					console.log('previous lamp timeout cleared');
+				}
+
+				// Set a new timeout to turn off the lamp after the specified duration
+				this.timeout = setTimeout(() => {
+					this.state = "off";
+					changeBlockImage(row, col, "assets/steam-lamp.png");
+					console.log('lamp off');
+					this.timeout = null; // Reset the timeout variable
+				}, global_lamp_max_duration); // Use the global lamp duration
+			}
+		}
+		
+		
+		
 		
 		//steam collector class (work in progress)
 		class Steam_Collector {
@@ -746,7 +882,7 @@ function resetGrid() {
 		
 		//steam organ class
 		class Steam_Organ {
-			constructor(name,state="off",audio=1000){
+			constructor(name,state="off",audio=global_organ_frequency){
 				this.name = name;
 				this.audio = audio;
 				this.state = state;
@@ -929,8 +1065,13 @@ function resetGrid() {
 		
 		//recursive motion function
 			recursive_move(){
-				
-									
+			if(this.distance_moved >= this.max_puff_distance){
+				this.kill_puff()
+				return;
+			}
+			
+			
+			try{	
 				this.foundSpot = false; 
 				
 				console.log('moved/max:'+this.distance_moved+"/"+max_puff_distance)
@@ -957,6 +1098,54 @@ function resetGrid() {
 				  R: adjCells[3] !== null && adjCells[3] !== undefined && adjCells[3].hasOwnProperty('name') &&
 					 (standard_behaviour.includes(adjCells[3].name) || adjCells[3].name.includes("funnel"))  // right
 				};
+				
+				
+				//steam spike,launcher and lamp advanced move limiter
+				if(adjCells[1]){
+					if(adjCells[1].hasOwnProperty('name')){
+						if(adjCells[1].name.includes("spike")||adjCells[1].name.includes("lamp")||adjCells[1].name.includes("launcher")){					
+							ValidArr["D"] = null
+							adjCells[1] = null
+							console.log('limited')
+						}
+					}
+				}
+				
+				if(adjCells[2]){
+					if(adjCells[2].hasOwnProperty('name')){
+						if(adjCells[2].name.includes("spike")||adjCells[2].name.includes("lamp")||adjCells[2].name.includes("launcher")){					
+							ValidArr["L"] = null
+							adjCells[2] = null
+							console.log('limited')
+						}
+					}
+				}
+				
+				if(adjCells[3]){
+					if(adjCells[3].hasOwnProperty('name')){
+						if(adjCells[3].name.includes("spike")||adjCells[3].name.includes("lamp")||adjCells[3].name.includes("launcher")){						
+							ValidArr["R"] = null
+							adjCells[3] =null
+							console.log('limited')
+						}
+					}
+				}
+				
+				
+				//steam crank further limiter
+				if(gridData[this.position.row][this.position.col]){
+					if(gridData[this.position.row][this.position.col].hasOwnProperty('name')){
+						if(gridData[this.position.row][this.position.col].name.includes('crank')){
+							if(gridData[this.position.row][this.position.col].flow == "horizontal"){
+								ValidArr["U"] = null
+								adjCells[0] =null
+								ValidArr["D"] = null
+								adjCells[1] = null
+								console.log('crank-limited')
+							}
+						}
+					}
+				}
 				
 				
 				
@@ -1102,15 +1291,19 @@ function resetGrid() {
 				}
 				
 				
+				if(adjCells[2]){
 					if(adjCells[2].hasOwnProperty("name")&&adjCells[2].name.includes("vent")){
 				    	adjCells[2] = null
 						ValidArr["L"] = null						
 					}
+					}
+					
+					if(adjCells[3]){
 					if(adjCells[3].hasOwnProperty("name")&&adjCells[3].name.includes("vent")){					
 						adjCells[3] = null
 						ValidArr["R"] = null
 					}
-					
+					}
 				
 				
 				
@@ -1221,7 +1414,7 @@ function resetGrid() {
 				}
 				
 				
-				
+				if(adj_block[1]){
 				if(adj_block[1].hasOwnProperty("flow")){			
 						if(this.current_direction=="L"&&adj_block[1].flow=="horizontal"){
 							ValidArr["D"] = null
@@ -1232,6 +1425,10 @@ function resetGrid() {
 							adj_block[1] = null
 						}
 					}
+					}
+					
+				
+				if(adjCells[0]){
 				if(adjCells[0].hasOwnProperty("flow")){			
 						if(this.current_direction=="L"&&adjCells[0].flow=="horizontal"){
 							ValidArr["U"] = null
@@ -1242,8 +1439,10 @@ function resetGrid() {
 							adjCells[0] = null
 						}
 					}
+				}
 					
-					
+				
+				if(adj_block[2]){
 				if(adj_block[2].hasOwnProperty("flow")){			
 						if(this.current_direction=="D"&&adj_block[2].flow=="vertical"){
 							ValidArr["L"] = null
@@ -1255,17 +1454,21 @@ function resetGrid() {
 							
 						}
 					}
-					
+					}
+				
+				
+				if(adj_block[3]){
 				if(adj_block[3].hasOwnProperty("flow")){			
 						if(this.current_direction=="D"&&adj_block[3].flow=="vertical"){
 							ValidArr["R"] = null
 							adj_block[3] = null
 						}
 						if(this.current_direction=="U"&&adj_block[3].flow=="vertical"){
-							ValidArr["L"] = null
+							ValidArr["R"] = null
 							adj_block[3] = null
 						}
 					}
+				}
 					
 				
 				
@@ -1287,7 +1490,39 @@ function resetGrid() {
 				
 				
 				
+				//activate lamp and kill puff
+				if (gridData[this.position.row][this.position.col].name.includes("lamp")) {
+					// Activate the lamp
+					gridData[this.position.row][this.position.col].activate(this.position.row, this.position.col);				
+					this.kill_puff()
+					return;
+				}
 				
+				//activate launcher and kill puff
+				if (gridData[this.position.row][this.position.col].name.includes("launcher")) {
+					// Activate the launcher
+					gridData[this.position.row][this.position.col].activate();		
+					gridData[this.position.row][this.position.col].updateImg(this.position.row,this.position.col)					
+					this.kill_puff()
+					return;
+				}
+				
+				
+				
+				
+				
+				//steam spike system activates spike and kills puff
+				if(gridData[this.position.row][this.position.col].name.includes("spike")){		
+					gridData[this.position.row][this.position.col].updateImg();
+					gridData[this.position.row][this.position.col].toggleState();
+					gridData[this.position.row][this.position.col].updateImg(this.position.row,this.position.col);
+					this.kill_puff()
+					return;
+				}
+				
+				
+				
+				//standard straight motion system
 				if(ValidArr[this.current_direction]==true){ //can move straight
 					console.log("straight line motion");
 					if(this.current_direction=="U")
@@ -1346,8 +1581,9 @@ function resetGrid() {
 					this.check_found_spot();
 					setTimeout(()=>{this.recursive_move()},puff_speed)
 				}
-				
+					}catch(e){console.log(e)}
 				this.check_found_spot();
+			
 			}
 			
 			
@@ -1374,7 +1610,7 @@ function resetGrid() {
 						//increment distance moved
 						this.distance_moved += 1;
 						let scaledValue = Math.round((this.distance_moved / 99) * 255); // Scale distance to 1-255 range
-						puffElement.style.backgroundColor = "rgb(" + scaledValue + "," + (255 - scaledValue) + ",30)";
+						puffElement.style.backgroundColor = "rgb(" + scaledValue + "," + (255 - scaledValue) + ",90)";
 						puffElement.innerHTML = this.distance_moved + "-"+this.current_direction
 
 						this.foundSpot = true;
@@ -1390,12 +1626,41 @@ function resetGrid() {
 
 		
 		
+		 //used for revolver
 		 function steamSystem_main(act_r, act_c) {        
             console.log(gridData);
             const adjCells = adj(act_r, act_c);
+			
+			//additional check for spike/lamp/launcher below
+			if(adjCells[1]){
+				if(adjCells[1].hasOwnProperty('name')&&adjCells[1].name.includes('spike')){
+					adjCells[1] = null
+				}
+				if(adjCells[1].hasOwnProperty('name')&&adjCells[1].name.includes('lamp')){
+					adjCells[1] = null
+				}
+				if(adjCells[1].hasOwnProperty('name')&&adjCells[1].name.includes('launcher')){
+					adjCells[1] = null
+				}
+			}
+			
+			//more sus crank checks
+			if(adjCells[1]){
+				if(adjCells[1].hasOwnProperty('name')&&adjCells[1].name.includes('crank')){
+				if(adjCells[1].flow=="horizontal")
+					adjCells[1] = null
+				}
+			}
+			if(adjCells[0]){
+				if(adjCells[0].hasOwnProperty('name')&&adjCells[0].name.includes('crank')){
+				if(adjCells[0].flow=="horizontal")
+					adjCells[0] = null
+				}
+			}
 
             
             adjCells.forEach((cell, index) => {
+			if(cell)
                 console.log(`Adjacent ${index}: ${cell === "null" ? "null" : cell.name}`);
             });
 
@@ -1407,7 +1672,8 @@ function resetGrid() {
 				adjCells[0].name.includes("funnel")
 			  )
 			) {
-			  //alert('up');
+	
+			  //spawn puff up
 			  let _puff = new Puff("U", { row: act_r - 1, col: act_c });
 			} 
 			else if (
@@ -1418,7 +1684,8 @@ function resetGrid() {
 				adjCells[1].name.includes("funnel")
 			  )
 			) {
-			  //alert('down');
+		
+			  //spawn puff down
 			  let _puff = new Puff("D", { row: act_r + 1, col: act_c });
 			} 
 			else {
@@ -1430,10 +1697,39 @@ function resetGrid() {
         }
 			
 
+		//used for stomper
        function steamSystem_main2(act_r, act_c, provider="") {
 			console.log(gridData);
 			
 			let adjCells = adj(act_r, act_c); // Get adjacent cells
+			
+			//additional check for spike/lamp below
+			if(adjCells[1]){
+				if(adjCells[1].hasOwnProperty('name')&&adjCells[1].name.includes('spike')){
+					adjCells[1] = null
+				}
+				if(adjCells[1].hasOwnProperty('name')&&adjCells[1].name.includes('lamp')){
+					adjCells[1] = null
+				}
+				if(adjCells[1].hasOwnProperty('name')&&adjCells[1].name.includes('launcher')){
+					adjCells[1] = null
+				}
+			}
+						
+			//more sus crank checks
+			if(adjCells[1]){
+				if(adjCells[1].hasOwnProperty('name')&&adjCells[1].name.includes('crank')){
+				if(adjCells[1].flow=="horizontal")
+					adjCells[1] = null
+				}
+			}
+			if(adjCells[0]){
+				if(adjCells[0].hasOwnProperty('name')&&adjCells[0].name.includes('crank')){
+				if(adjCells[0].flow=="horizontal")
+					adjCells[0] = null
+				}
+			}
+
 
 			// Function to check if a cell is valid
 			function isValidCell(cell) {
