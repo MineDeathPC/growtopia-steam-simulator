@@ -66,6 +66,12 @@ function saveBuild(){swal("404","not implemented yet, sorry!","error")}
 function loadBuild(){swal("404","not implemented yet, sorry!","error")}
 */
 
+//min,max are inclusive
+function randomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 let selectedItem = null
 
@@ -315,14 +321,14 @@ function resetGrid() {
 		
 		
 		//important constants
-		const true_puff_speed = 100
-		const collector_puff_speed = 300;//0.1s (default)
+		const true_puff_speed = 100 //0.1s default
+		const collector_puff_speed = 300;//0.3s (default)
 		const max_puff_distance = 99;//99 (based on actual game)
-		const global_collector_max_duration = 10;
+		const global_collector_max_duration = 20000; //20s, 20000ms
 		const global_vent_max_duration = 3000 //3 sec
 		const global_organ_max_duration = 110;
 		const global_organ_frequency = 500;
-		const global_lamp_max_duration = 10000;
+		const global_lamp_max_duration = 10000; //10s, 10000ms
 		
 		//variable puff speed
 		let puff_speed = true_puff_speed ;//0.1s (default)
@@ -385,6 +391,7 @@ function resetGrid() {
 		    "steam organ",
 			"steam lamp",
 			"steam launcher",
+			"steam scrambler",
 			
 			"steam door",
 			"steam spikes"
@@ -523,7 +530,7 @@ function resetGrid() {
 
 				//handle steam collector block placement
 				if (selectedItem.name.includes("collector")) {
-					gridData[row][col] = new Steam_Collector(selectedItem.name, 0);
+					gridData[row][col] = new Steam_Collector(selectedItem.name, []);
 					console.log("steam collector placed");
 					return;
 				}
@@ -873,9 +880,9 @@ function resetGrid() {
 		
 		//steam collector class (work in progress)
 		class Steam_Collector {
-			constructor(name, steam_puff_count=0){
+			constructor(name, puffs=[]){
 				this.name = name;
-				this.steam_puff_count = steam_puff_count;
+				this.puffs = puffs;
 			}
 		}
 		
@@ -1367,14 +1374,7 @@ function resetGrid() {
 				
 				
 					
-				
-				
-				
-				
-				
-				
-				
-				
+						
 				//steam crank system to prevent motion to improper crank
 				//obtaining current block infront of steam puff
 				let adj_block = adj(this.position.row,this.position.col)
@@ -1470,8 +1470,7 @@ function resetGrid() {
 					}
 				}
 					
-				
-				
+							
 				
 				//vent system (new)
 				if (gridData[this.position.row][this.position.col].name.includes("vent")) {
@@ -1506,10 +1505,7 @@ function resetGrid() {
 					this.kill_puff()
 					return;
 				}
-				
-				
-				
-				
+									
 				
 				//steam spike system activates spike and kills puff
 				if(gridData[this.position.row][this.position.col].name.includes("spike")){		
@@ -1520,6 +1516,131 @@ function resetGrid() {
 					return;
 				}
 				
+
+
+
+
+
+
+
+
+			
+
+
+			//PRIMATIVE SYSTEM BELOW THIS LINE
+			
+			
+				console.log("BLOCK:"+gridData[this.position.row][this.position.col].name+" -Valid Array:"+Object.values(ValidArr))
+				
+				//steam scrambler system
+				if(gridData[this.position.row][this.position.col].name.includes('scrambler')){
+					console.log('steam scrambler system active')
+					
+					let possibleKeys = Object.keys(ValidArr).filter(key => 
+					  ValidArr[key] != null && ValidArr[key] != 'null' && ValidArr[key] != false
+					);
+					
+					//srcambler cant proceed anywhere, kill puff
+					if(possibleKeys.length==0){
+						console.log('scrambler cant proceed, kill puff')
+						this.kill_puff();
+						return;
+					}
+					
+					
+					console.log('possible spot count: '+possibleKeys.length);
+					
+					let randomKey = possibleKeys[Math.floor(Math.random() * possibleKeys.length)]
+					console.log('selected output: '+ randomKey)
+					this.changePosition(randomKey,this.position.row,this.position.col)
+				}
+			
+			
+			
+			
+			
+		// steam collector system
+if (gridData[this.position.row][this.position.col].name.includes('collector')) {
+    let possibleKeys = Object.keys(ValidArr).filter(key => 
+        ValidArr[key] != null && ValidArr[key] != 'null' && ValidArr[key] != false
+    );
+
+    if (possibleKeys.length >= 2) {
+        let current_collector = gridData[this.position.row][this.position.col];
+        
+        // If the puff is not already in the collector, add it, but don't add `this` puff again
+        if (current_collector.puffs.filter(puff => puff.unique_id == this.unique_id).length == 0) {
+            current_collector.puffs.push(this);
+
+            // Set a 20-second timer to kill and remove the puff if it stays too long
+            this.timeoutId = setTimeout(() => {
+                // Kill the puff if it exceeds 20 seconds in the collector
+                current_collector.puffs = current_collector.puffs.filter(p => p.unique_id !== this.unique_id);
+                console.log(`Puff ${this.unique_id} killed after 20 seconds in the collector.`);
+                this.kill_puff(); // Kill the puff
+            }, global_collector_max_duration); // 20 seconds timeout
+        }
+
+        console.log('collector puff count: ' + current_collector.puffs.length);
+
+        // If the number of valid directions equals the number of stored puffs, release them
+        if (possibleKeys.length == current_collector.puffs.length) {
+            console.log('releasing steam puffs from collector...');
+
+            // Only release and move puffs that are already stored in the collector (excluding `this`)
+            current_collector.puffs.forEach((puff, index) => {
+                clearTimeout(puff.timeoutId);  // Clear timeout for released puff
+
+                if (puff.unique_id !== this.unique_id) {  // Make sure not to move `this` puff here
+                    let direction = possibleKeys[index];
+                    if (direction == "U")
+                        puff.changePosition("U", puff.position.row - 1, puff.position.col);
+                    if (direction == "D")
+                        puff.changePosition("D", puff.position.row + 1, puff.position.col);
+                    if (direction == "L")
+                        puff.changePosition("L", puff.position.row, puff.position.col - 1);
+                    if (direction == "R")
+                        puff.changePosition("R", puff.position.row, puff.position.col + 1);
+
+                    // Continue moving the puff recursively
+                    setTimeout(() => { puff.recursive_move(); }, puff_speed);
+                }
+
+                if (puff.unique_id == this.unique_id) {  // Make sure not to move `this` puff here
+                    let direction = possibleKeys[index];
+                    if (direction == "U")
+                        puff.changePosition("U", puff.position.row, puff.position.col);
+                    if (direction == "D")
+                        puff.changePosition("D", puff.position.row, puff.position.col);
+                    if (direction == "L")
+                        puff.changePosition("L", puff.position.row, puff.position.col);
+                    if (direction == "R")
+                        puff.changePosition("R", puff.position.row, puff.position.col);
+
+                    // Continue moving the puff recursively
+                    setTimeout(() => { puff.recursive_move(); }, puff_speed);
+                }
+            });
+
+            // Clear the stored puffs after releasing them
+            current_collector.puffs = [];
+        } else {
+            // Wait for more puffs if not all are ready
+            return;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 				
 				
 				//standard straight motion system
