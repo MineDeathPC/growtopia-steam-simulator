@@ -1374,25 +1374,23 @@ function resetGrid() {
 				
 			
 				
-				
-				
-				
-				
-			
-
-
+					
 				
 				//prevent back flow of steam, note applies for collectors, collectors go below this
 				if(this.current_direction=="U"){
+				 if(!gridData[this.position.row][this.position.col].name.includes("funnel"))
 				 ValidArr.D = null
 				}
 				if(this.current_direction=="D"){
+					 if(!gridData[this.position.row][this.position.col].name.includes("funnel"))
 				 ValidArr.U = null
 				}
 				if(this.current_direction=="L"){
+					 if(!gridData[this.position.row][this.position.col].name.includes("funnel"))
 				 ValidArr.R = null
 				}
 				if(this.current_direction=="R"){
+					 if(!gridData[this.position.row][this.position.col].name.includes("funnel"))
 				 ValidArr.L = null
 				}
 				
@@ -1638,61 +1636,74 @@ function resetGrid() {
 
 
 
+			
 
 
 
-
-				
-				//currently puff is in a funnel block, handle movement from funnel
-				if(getBlockData(this.position.row,this.position.col).name.includes("funnel")){
+		
+			//currently puff is in a funnel block, handle movement from funnel
+				if(gridData[this.position.row][this.position.col].name.includes("funnel")){
 					console.log('currently in funnel')
 					
-					if(getBlockData(this.position.row,this.position.col).name.includes("up")){
-						if(ValidArr["U"]){
+					if(gridData[this.position.row][this.position.col].name.includes("up")){
+							console.log(ValidArr['U'])
+							if(ValidArr['U']&&ValidArr['U']!='null'){
 							console.log('up funnel')
 							this.changePosition("U",this.position.row-1,this.position.col)
-						}
-						else{
-							this.kill_puff()
-							return
-						}
+							}
+							else{
+								this.kill_puff()
+								return
+							}
+					
+						
 					}
-					else if(getBlockData(this.position.row,this.position.col).name.includes("down")){
-						if(ValidArr["D"]){
+					else if(gridData[this.position.row][this.position.col].name.includes("down")){
+							console.log(ValidArr['D'])
+							if(ValidArr['D']&&ValidArr['D']!='null'){
 							console.log('down funnel')
 							this.changePosition("D",this.position.row+1,this.position.col)
-						}
-						else{
-							this.kill_puff()
-							return
-						}
+							}
+							else{
+								this.kill_puff()
+								return
+							}
+						
 					}
-					else if(getBlockData(this.position.row,this.position.col).name.includes("left")){
-						if(ValidArr["L"]){
+					else if(gridData[this.position.row][this.position.col].name.includes("left")){
+						if(ValidArr['L']&&ValidArr['L']!='null'){
 							console.log('left funnel')
 							this.changePosition("L",this.position.row,this.position.col-1)
-						}
-						else{
-							this.kill_puff()
-							return
-						}
+							}
+							else{
+								this.kill_puff()
+								return
+							}
+						
 					}
-					else if(getBlockData(this.position.row,this.position.col).name.includes("right")){
-						if(ValidArr["R"]){
+					else if(gridData[this.position.row][this.position.col].name.includes("right")){
+					if(ValidArr['R']&&ValidArr['R']!='null'){
 							console.log('right funnel')
 							this.changePosition("R",this.position.row,this.position.col+1)
 						}
 						else{
-							this.kill_puff()
-							return
-						}
+								this.kill_puff()
+								return
+							}
+						
 					}
+					
 					
 					this.check_found_spot();
 					setTimeout(()=>{this.recursive_move()}, this.puff_speed)
-						return;
+				   return;
 				}
+				
+				
+				
 			
+
+
 
 
 			//PRIMATIVE SYSTEM BELOW THIS LINE
@@ -1806,7 +1817,8 @@ if (gridData[this.position.row][this.position.col].name.includes('collector')) {
 
 
 
-
+		
+			
 
 
 				
