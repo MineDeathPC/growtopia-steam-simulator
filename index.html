@@ -1372,40 +1372,7 @@ function resetGrid() {
 				
 				
 				
-				
-				//currently puff is in a funnel block, handle movement from funnel
-				if(getBlockData(this.position.row,this.position.col).name.includes("funnel")){
-					console.log('currently in funnel')
-					
-					if(getBlockData(this.position.row,this.position.col).name.includes("up")){
-						if(ValidArr["U"]){
-							console.log('up funnel')
-							this.changePosition("U",this.position.row-1,this.position.col)
-						}
-					}
-					else if(getBlockData(this.position.row,this.position.col).name.includes("down")){
-						if(ValidArr["D"]){
-							console.log('down funnel')
-							this.changePosition("D",this.position.row+1,this.position.col)
-						}
-					}
-					else if(getBlockData(this.position.row,this.position.col).name.includes("left")){
-						if(ValidArr["L"]){
-							console.log('left funnel')
-							this.changePosition("L",this.position.row,this.position.col-1)
-						}
-					}
-					else if(getBlockData(this.position.row,this.position.col).name.includes("right")){
-						if(ValidArr["R"]){
-							console.log('right funnel')
-							this.changePosition("R",this.position.row,this.position.col+1)
-						}
-					}
-					
-					this.check_found_spot();
-					setTimeout(()=>{this.recursive_move()}, this.puff_speed)
-						return;
-				}
+			
 				
 				
 				
@@ -1675,7 +1642,56 @@ function resetGrid() {
 
 
 
-
+				
+				//currently puff is in a funnel block, handle movement from funnel
+				if(getBlockData(this.position.row,this.position.col).name.includes("funnel")){
+					console.log('currently in funnel')
+					
+					if(getBlockData(this.position.row,this.position.col).name.includes("up")){
+						if(ValidArr["U"]){
+							console.log('up funnel')
+							this.changePosition("U",this.position.row-1,this.position.col)
+						}
+						else{
+							this.kill_puff()
+							return
+						}
+					}
+					else if(getBlockData(this.position.row,this.position.col).name.includes("down")){
+						if(ValidArr["D"]){
+							console.log('down funnel')
+							this.changePosition("D",this.position.row+1,this.position.col)
+						}
+						else{
+							this.kill_puff()
+							return
+						}
+					}
+					else if(getBlockData(this.position.row,this.position.col).name.includes("left")){
+						if(ValidArr["L"]){
+							console.log('left funnel')
+							this.changePosition("L",this.position.row,this.position.col-1)
+						}
+						else{
+							this.kill_puff()
+							return
+						}
+					}
+					else if(getBlockData(this.position.row,this.position.col).name.includes("right")){
+						if(ValidArr["R"]){
+							console.log('right funnel')
+							this.changePosition("R",this.position.row,this.position.col+1)
+						}
+						else{
+							this.kill_puff()
+							return
+						}
+					}
+					
+					this.check_found_spot();
+					setTimeout(()=>{this.recursive_move()}, this.puff_speed)
+						return;
+				}
 			
 
 
