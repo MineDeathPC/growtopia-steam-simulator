@@ -1172,6 +1172,8 @@ function resetGrid() {
 					puffElement.style.top = '0px'; 
 					puffElement.style.left = '0px'; 
 					this.distance_moved+=1
+					let scaledValue = Math.round((this.distance_moved / 99) * 255); // Scale distance to 1-255 range
+					puffElement.style.backgroundColor = "rgb(" + scaledValue + "," + (255 - scaledValue) + ",90)";
 					this.ele = puffElement;
 					Steam_Puffs.push(this);
 					cell.appendChild(puffElement)
@@ -1842,10 +1844,12 @@ if (gridData[this.position.row][this.position.col].name.includes('collector')) {
         // Release puffs when the number of valid directions equals the number of puffs
         if (possibleKeys.length === current_collector.puffs.length) {
             console.log('Releasing steam puffs from collector...');
+			let index = 0
 
             // Create new puffs based on directions
             possibleKeys.forEach(direction => {
                 let new_puff;
+				
                 switch (direction) {
                     case "U":
                         new_puff = new Puff("U", { row: this.position.row-1, col: this.position.col });
@@ -1860,6 +1864,8 @@ if (gridData[this.position.row][this.position.col].name.includes('collector')) {
                         new_puff = new Puff("R", { row: this.position.row, col: this.position.col+1 });
                         break;
                 }
+				new_puff.distance_moved = current_collector.puffs[index].distance_moved;
+				index++;
             });
 
             // Kill all puffs in the collector and clear the list
