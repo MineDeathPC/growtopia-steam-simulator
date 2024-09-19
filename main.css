@@ -189,7 +189,7 @@
 
   #show_grid_button {
   	position        : fixed;
-  	top             : 10px;
+  	top             : 15px;
   	right           : 10px;
   	z-index         : 20;
   	padding         : 10px 20px;
@@ -199,7 +199,7 @@
   	border          : none;
   	border-radius   : 5px;
   	cursor          : pointer;
-  	font-size       : 10px;
+  	font-size       : 9px;
   }
 
 
@@ -232,7 +232,7 @@
 
   #load_build_button {
   	position        : fixed;
-  	top             : 95px;
+  	top             : 93px;
   	/* Adjusted to be below the Save Build button */
   	right           : 10px;
   	z-index         : 20;
@@ -245,6 +245,22 @@
   	cursor          : pointer;
   	font-size       : 8px;
   }
+
+  #reset_grid_button {
+	position        : fixed;
+	top             : 130px;
+	/* Adjusted to be below the Save Build button */
+	right           : 10px;
+	z-index         : 20;
+	padding         : 10px 20px;
+	background-color: rgb(255, 72, 0);
+	font-family     : 'Roboto Mono', monospace;
+	color           : white;
+	border          : none;
+	border-radius   : 5px;
+	cursor          : pointer;
+	font-size       : 8px;
+}
 
   #load_example_build_button {
   	position        : fixed;

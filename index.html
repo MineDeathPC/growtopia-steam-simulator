@@ -47,8 +47,9 @@
     <button id="show_grid_button" alt="toggle grid" onclick="mobileToggle()">Toggle Grid (G)</button>
 	
 	 
-     <button id="save_build_button" onclick="saveBuild2()">Save Build</button>
-	 <button id="load_build_button" onclick="loadBuild2()">Load Build</button>
+     <button id="save_build_button" onclick="saveBuild()">Save Build</button>
+	 <button id="load_build_button" onclick="loadBuild()">Load Build</button>
+	 <button id="reset_grid_button" onclick="resetGrid_button()">Reset Grid</button>
 	 <button id="load_example_build_button" style="display:none;">Load Examples</button>
     <div id="example-builds-container" style="display:none; position:fixed; width:50%; height:50%; z-index:15; top:50%; left:50%; transform:translate(-50%, -50%); padding:20px; background:white; border:1px solid 	#ccc; box-shadow:0px 0px 10px rgba(0, 0, 0, 0.1);"></div>
 	
@@ -62,8 +63,25 @@
 <script src = "sweetalert.js"></script>
 <script src = "index.js"></script>
 <script>
+	//important constants
+		const global_true_puff_speed = 100 //0.1s default
+		const collector_puff_speed = 300;//0.3s (default)
+		const max_puff_distance = 99;//99 (based on actual game)
+		const global_collector_max_duration = 20000; //20s, 20000ms
+		const global_vent_max_duration = 3000 //3 sec
+		const global_organ_max_duration = 110;
+		const global_organ_frequency = 500;
+		const global_lamp_max_duration = 10000; //10s, 10000ms
+		const global_engine_interval = 3000; //3s
+		
 
 
+
+
+
+
+
+//loading and saving system
 function saveBuild2(){swal("404","not implemented yet, sorry!","error")}
 function loadBuild2(){swal("404","not implemented yet, sorry!","error")}
 
@@ -119,7 +137,7 @@ function saveBuild() {
     
     const simplifiedGridData = gridData.map(row => 
         row.map(block => {
-            if (block) {
+            if (block&&block!='null') {
                 if (itemsWithState.includes(block.name)) {
                     console.log("saved++" + getBlockState(block));
                     return { name: block.name, state: getBlockState(block) }; // Save both name and specific state
@@ -127,7 +145,7 @@ function saveBuild() {
                     return { name: block.name }; // Save only the name for other blocks
                 }
             } else {
-                return "null"; // Use the string "null" for empty slots
+                return null; // Use the string "null" for empty slots
             }
         })
     );
@@ -137,6 +155,7 @@ function saveBuild() {
     link.href = URL.createObjectURL(blob);
     link.download = "steam_simulator_build.json";
     link.click();
+	console.log('build saved!')
 }
 
 // Load build function
@@ -183,6 +202,7 @@ function loadFile(event) {
         }
     };
     reader.readAsText(file);
+	console.log('build loaded!')
 }
 
 
@@ -204,15 +224,70 @@ setTimeout(()=>{
 
 
 // Function to reset the grid visually and in gridData
+function resetGrid_button() {
+	swal({
+		title: "Are you sure?",
+		text: "The grid will be cleared!",
+		icon: "warning",
+		buttons: true,
+		dangerMode: true,
+	}).then((result)=>{
+		if(!result)
+			return;
+
+		for (let i = 0; i < 10000; i++) {
+			const cell = document.getElementById(`grid-cell-${i}`);
+			if (cell) {
+				cell.innerHTML = '';
+				cell.style.border = '2px groove rgba(0, 230, 230, 0.4)';
+				cell.style.filter = ''
+				let existingButton = document.getElementById(`activator-${i}`);
+					if (existingButton) {
+						document.body.removeChild(existingButton);
+						existingButton.remove()
+					}
+			}
+		
+		}
+		//kill all steam puffs
+		Steam_Puffs.forEach((puff)=>{
+			puff.kill_puff()
+			console.log('killed a steam puff!')
+		})
+		Steam_Puffs = []
+
+		// Reset gridData
+		gridData = Array.from({ length: 100 }, () => Array(100).fill(null)); 
+	})
+}
+
+
+//same as above but without warning
 function resetGrid() {
-    for (let i = 0; i < 10000; i++) {
-        const cell = document.getElementById(`grid-cell-${i}`);
-        if (cell) {
-            cell.innerHTML = '';
-            cell.style.border = '2px groove rgba(0, 230, 230, 0.4)';
-        }
-    }
-    gridData = Array.from({ length: 100 }, () => Array(100).fill(null)); // Reset gridData
+		for (let i = 0; i < 10000; i++) {
+			const cell = document.getElementById(`grid-cell-${i}`);
+			if (cell) {
+				cell.innerHTML = '';
+				cell.style.border = '2px groove rgba(0, 230, 230, 0.4)';
+				cell.style.filter = ''
+				let existingButton = document.getElementById(`activator-${i}`);
+					if (existingButton) {
+						document.body.removeChild(existingButton);
+						existingButton.remove()
+					}
+			}
+		
+		}
+
+		//kill all steam puffs
+		Steam_Puffs.forEach((puff)=>{
+			puff.kill_puff()
+			console.log('killed a steam puff!')
+		})
+		Steam_Puffs = []
+
+		// Reset gridData
+		gridData = Array.from({ length: 100 }, () => Array(100).fill(null)); 
 }
 
 
@@ -259,18 +334,6 @@ function resetGrid() {
 
 
 
-		//toggle grid shortcut
-		document.addEventListener('keydown', function(event) {
-			if (event.key === 'g' || event.key === 'G') {
-				grid_view_toggle = !grid_view_toggle;
-				if (grid_view_toggle) {
-					showGridBorder()
-				} else {
-					hideGridBorder()
-				}
-			}
-		});
-		
 		
 		
 		
@@ -314,31 +377,33 @@ function resetGrid() {
             inventoryVisible = !inventoryVisible; // Toggle state
         }
 
+		
         document.addEventListener('keydown', (event) => {
+			//toggle inv shortcut
             if (event.key === 'i' || event.key === 'I') {
                 toggleInventory();
             }
+			//saving build shortcut
             if ((event.ctrlKey || event.metaKey) && event.key === 's') {
                 event.preventDefault(); // Prevent the default save dialog
-				alert("not currently functional, sorry")
+				saveBuild() 
 				return;
-                saveGrid();
             }
+
+			//toggle grid shortcut
+			if (event.key === 'g' || event.key === 'G') {
+				grid_view_toggle = !grid_view_toggle;
+				if (grid_view_toggle) {
+					showGridBorder()
+				} else {
+					hideGridBorder()
+				}
+			}
         });
 		
 		
 		
-		//important constants
-		const global_true_puff_speed = 100 //0.1s default
-		const collector_puff_speed = 300;//0.3s (default)
-		const max_puff_distance = 99;//99 (based on actual game)
-		const global_collector_max_duration = 20000; //20s, 20000ms
-		const global_vent_max_duration = 3000 //3 sec
-		const global_organ_max_duration = 110;
-		const global_organ_frequency = 500;
-		const global_lamp_max_duration = 10000; //10s, 10000ms
-		const global_engine_interval = 3000; //3s
-		
+	
 		
 		let activator_custom_function = {};
 		let change_image_all_functions = {};
@@ -2008,7 +2073,7 @@ if (gridData[this.position.row][this.position.col].name.includes('collector')) {
 			let unique_1 = unique(20);
 			
 			activator_queue[unique_1] = function(){
-            console.log(gridData);
+           // console.log(gridData);
             const adjCells = adj(act_r, act_c);
 			
 			//additional check for spike/lamp/launcher below
@@ -2080,7 +2145,7 @@ if (gridData[this.position.row][this.position.col].name.includes('collector')) {
 
 		//used for stomper
        function steamSystem_main2(act_r, act_c, provider="") {
-			console.log(gridData);
+		//	console.log(gridData);
 			
 			let adjCells = adj(act_r, act_c); // Get adjacent cells
 			
@@ -2187,7 +2252,7 @@ if (gridData[this.position.row][this.position.col].name.includes('collector')) {
 			let unique_1 = unique(20);
 			
 			activator_queue[unique_1] = function(){
-            console.log(gridData);
+         //   console.log(gridData);
             const adjCells = adj(act_r, act_c);
 			
 			//additional check for spike/lamp/launcher below
@@ -2293,7 +2358,7 @@ if (gridData[this.position.row][this.position.col].name.includes('collector')) {
 			let unique_1 = unique(20);
 			
 			activator_queue[unique_1] = function(){
-            console.log(gridData);
+         //  console.log(gridData);
             const adjCells = adj(act_r, act_c);
 			
 			//additional check for spike/lamp/launcher below
