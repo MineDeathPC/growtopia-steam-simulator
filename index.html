@@ -21,8 +21,10 @@
 </head>
 
 <body>
-  <div class="orientation-message"style="color:white;">
-        Please rotate your device to landscape mode.
+  <div class="orientation-message"style="font-size:0.45cm;font-family: 'Roboto Mono', monospace;color:white;position:absolute;left:50%;top:10%;transform:translate(-50%,10%);">
+        Please rotate your device...
+		<br /><br /><br /><br />
+		<img src="assets/rotate.png"></img>
     </div>
 	
 	  <div class="content">
@@ -51,7 +53,7 @@
     <div id="example-builds-container" style="display:none; position:fixed; width:50%; height:50%; z-index:15; top:50%; left:50%; transform:translate(-50%, -50%); padding:20px; background:white; border:1px solid 	#ccc; box-shadow:0px 0px 10px rgba(0, 0, 0, 0.1);"></div>
 	
 	
-<div class="fixed-text">Created By: <i style="color:rgb(255,255,30);">  MineDeath </i></div>
+<div class="fixed-text">Created By: <i style="color:rgb(255, 195, 30);"><b>MineDeath </b></i></div>
 	
 <!-- end of all content-->
 </div>
@@ -186,8 +188,6 @@ function loadFile(event) {
 
 
 // Function to restore the specific block state during loading
-// Function to restore the specific block state during loading
-// Function to restore the specific block state during loading
 function restoreBlockState(block, state,row=null,col=null) {
 setTimeout(()=>{
     if (!block) return;
@@ -209,11 +209,14 @@ function resetGrid() {
         const cell = document.getElementById(`grid-cell-${i}`);
         if (cell) {
             cell.innerHTML = '';
-            cell.style.border = '1px solid rgba(60,50,120,0.5)';
+            cell.style.border = '2px groove rgba(0, 230, 230, 0.4)';
         }
     }
     gridData = Array.from({ length: 100 }, () => Array(100).fill(null)); // Reset gridData
 }
+
+
+
 
 
 		//audio controls
@@ -363,7 +366,7 @@ function resetGrid() {
 			{ name: "steam crossover ULDR" },
 			{ name: "steam scrambler" },      
 			{ name: "steam organ" },			
-            { name: "steam pipe",hide:null},
+            { name: "steam pipe",hide:null}, //not implemented yet
 			{ name: "steam vent L" },     
 			{ name: "steam vent R" },   	
             { name: "steam revolver" },
@@ -511,6 +514,7 @@ function resetGrid() {
 			if (cell.hasChildNodes()) {
 				cell.innerHTML = '';
 				cell.style.border = '2px groove  rgba(0,230,230,0.4)';
+				cell.style.filter = ''; // Remove the shadow
 				gridData[row][col] = "null";
 
 				let existingButton = document.getElementById(`activator-${i}`);
@@ -525,6 +529,8 @@ function resetGrid() {
 				img.alt = selectedItem.name;
 				cell.appendChild(img);
 				cell.style.border = 'none';
+				 // Add a shadow effect
+				 cell.style.filter = "drop-shadow(5px 2px 2px rgba(0, 0, 0, 0.7))"
 				
 
 				//handling how the object should be, depending on block
@@ -1144,12 +1150,13 @@ function resetGrid() {
 				this.position = position
 				this.unique_id = unique(id_length);
 				this.distance_moved = distance_moved;
-				this.collector_max_duration = collector_max_duration;
-				this.generate_puff(this.position.row,this.position.col)	
+				this.collector_max_duration = collector_max_duration;				
 				this.foundSpot = foundSpot;
 				this.ele = ele;		
 				this.true_puff_speed = global_true_puff_speed;
 				this.puff_speed = this.true_puff_speed
+				//generate the new puff visually
+				setTimeout(()=>{this.generate_puff(this.position.row,this.position.col)},this.puff_speed)
 			}
 			
 			//generate a new steam puff visually
@@ -1737,8 +1744,8 @@ function resetGrid() {
 			
 			
 			
-			
-		// steam collector system
+			/*
+// steam collector system
 if (gridData[this.position.row][this.position.col].name.includes('collector')) {
     let possibleKeys = Object.keys(ValidArr).filter(key => 
         ValidArr[key] != null && ValidArr[key] != 'null' && ValidArr[key] != false
@@ -1803,6 +1810,63 @@ if (gridData[this.position.row][this.position.col].name.includes('collector')) {
 
             // Clear the stored puffs after releasing them
             current_collector.puffs = [];
+        } else {
+            // Wait for more puffs if not all are ready
+            return;
+        }
+    }
+}
+*/
+
+
+if (gridData[this.position.row][this.position.col].name.includes('collector')) {
+    const possibleKeys = Object.keys(ValidArr).filter(key => ValidArr[key]);
+
+    if (possibleKeys.length >= 2) {
+        const current_collector = gridData[this.position.row][this.position.col];
+
+        // Add puff to collector if it's not already present
+        if (!current_collector.puffs.some(puff => puff.unique_id === this.unique_id)) {
+            current_collector.puffs.push(this);
+
+            // Set a 20-second timer to remove the puff if it stays too long
+            this.timeoutId = setTimeout(() => {
+                current_collector.puffs = current_collector.puffs.filter(p => p.unique_id !== this.unique_id);
+                console.log(`Puff ${this.unique_id} killed after 20 seconds in the collector.`);
+                this.kill_puff();
+            }, global_collector_max_duration);
+        }
+
+        console.log(`Collector puff count: ${current_collector.puffs.length}`);
+
+        // Release puffs when the number of valid directions equals the number of puffs
+        if (possibleKeys.length === current_collector.puffs.length) {
+            console.log('Releasing steam puffs from collector...');
+
+            // Create new puffs based on directions
+            possibleKeys.forEach(direction => {
+                let new_puff;
+                switch (direction) {
+                    case "U":
+                        new_puff = new Puff("U", { row: this.position.row-1, col: this.position.col });
+                        break;
+                    case "D":
+                        new_puff = new Puff("D", { row: this.position.row+1, col: this.position.col });
+                        break;
+                    case "L":
+                        new_puff = new Puff("L", { row: this.position.row, col: this.position.col-1 });
+                        break;
+                    case "R":
+                        new_puff = new Puff("R", { row: this.position.row, col: this.position.col+1 });
+                        break;
+                }
+            });
+
+            // Kill all puffs in the collector and clear the list
+            current_collector.puffs.forEach(puff => puff.kill_puff());
+			this.kill_puff()
+            current_collector.puffs = [];
+			return;
         } else {
             // Wait for more puffs if not all are ready
             return;
