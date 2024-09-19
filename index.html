@@ -1327,6 +1327,16 @@ function resetGrid() {
 				this.kill_puff()
 				return;
 				}
+
+
+
+				//new check for vertical crank, spawned in it
+				if(gridData[this.position.row][this.position.col].name.includes("crank")){
+					if(gridData[this.position.row][this.position.col].flow == "vertical"){
+						ValidArr["L"] = null;
+						ValidArr["R"] = null;
+					}
+				}
 				
 				
 				//currently in a steam door block
