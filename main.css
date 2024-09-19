@@ -196,6 +196,19 @@
   	border-radius   : 5px;
   	font-size       : 10px;
   }
+  #puff-counter{
+	display         : block;
+	position        : fixed;
+	top             : 40px;
+	left            : 10px;
+	z-index         : 10;
+	color           : #ff7b00;
+	background-color: rgba(0, 0, 0, 0.3);
+	font-family     : 'Roboto Mono', monospace;
+	padding         : 5px 10px;
+	border-radius   : 5px;
+	font-size       : 8px;
+}
 
   #top-bar {
   	position        : fixed;

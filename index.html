@@ -40,7 +40,7 @@
 
     <!-- Hint text for showing inventory -->
     <button id="toggle-hint" onclick="toggleInventory()">Tap or press I to open/close Inventory</button>
-	
+	<h3 id="puff-counter">Active steam puff count: 0</h3>
 	
 
     <!-- Toggle Grid Button -->
@@ -1244,6 +1244,7 @@ function resetGrid() {
 					this.ele = puffElement;
 					Steam_Puffs.push(this);
 					cell.appendChild(puffElement)
+					document.getElementById('puff-counter').innerHTML = "Active steam puff count: " + Steam_Puffs.length;
 					setTimeout(()=>{this.recursive_move()},this.puff_speed)
 				 }
 	 
@@ -1257,8 +1258,12 @@ function resetGrid() {
 				console.log(document.getElementById("puff-" + this.unique_id))
 				document.getElementById("puff-" + this.unique_id).remove();
 				Steam_Puffs.splice(Steam_Puffs.indexOf(Steam_Puffs.filter(a=>a.unique_id==this.unique_id)[0]),1);
+				document.getElementById('puff-counter').innerHTML = "Active steam puff count: " + Steam_Puffs.length;
 				}
-				catch(e){return}
+				catch(e){
+					document.getElementById('puff-counter').innerHTML = "Active steam puff count: " + Steam_Puffs.length;
+					return
+				}
 				return;
 		}
 		
