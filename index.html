@@ -511,6 +511,7 @@ function resetGrid() {
             const img = document.createElement('img');
             img.src = "assets/" + item.name.toLowerCase().replaceAll(" ", "-") + ".png";
             img.alt = item.name;
+			img.title = item.name.replace("ULDR","").replace("URDL","");
 
             div.addEventListener('click', () => {
                 selectedItem = { name: item.name, orientation: 0 };
