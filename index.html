@@ -42,7 +42,7 @@
     <button id="toggle-hint" onclick="toggleInventory()">Tap or press I to open/close Inventory</button>
 	<h3 id="puff-counter" title="how many active steam puffs are present">Active steam puff count: 0</h3>
 	<button id="block-counter-button" onclick="toggleBlockCount()" title="how many blocks of each type are present on the grid">view block count</button>
-	<div id="block-count-display"><h2>block count: </h2><br /><br /> </div>
+	<div id="block-count-display"><h2>block count [BETA]: </h2><br /><br /> </div>
 
     <!-- Toggle Grid Button -->
     <button id="show_grid_button" alt="toggle grid" onclick="mobileToggle()">Hide Grid (G)</button>
@@ -105,7 +105,7 @@ function randomInt(min, max) {
 		  counter += 1;
 		}
 		
-		console.log(result)
+	//	console.log(result)
 		return result;
 	}
 
@@ -362,37 +362,70 @@ function resetGrid() {
 
 		//show block count function NEW
 		showingBlockCount = false;
-		function toggleBlockCount(){
-			
-			let count_display = document.getElementById("block-count-display");
-			if(!showingBlockCount){
-				let filteredData = gridData.flat().filter(a=>a && a.hasOwnProperty("name"));
-				let min_1 = false;
-				items.forEach(item => {
-				if(item.hasOwnProperty("hide")){
-					return; //equal to continue in forEach
-					}
-				
-				console.log(filteredData)
-				if((filteredData.filter(a=>a.name==item.name)).length > 0){
-					count_display.innerHTML += "<b>" + item.name + ": " + (filteredData.filter(a=>a.name==item.name)).length + "</b><br />";
-					min_1 = true
-				}
-     	   });
-		   		if(!min_1){
-					count_display.innerHTML += "no blocks to count"
-				}
 
-			count_display.style.display = 'block'
-			showingBlockCount = true
-			}
-			else{
-				count_display.style.display = 'none'
-				count_display.innerHTML = "<h2>block count:</h2><br /><br />";
-				showingBlockCount = false
-			}
-		}
-	
+		showingBlockCount = false;
+
+function toggleBlockCount() {
+    let count_display = document.getElementById("block-count-display");
+    
+    if (!showingBlockCount) {
+        let filteredData = gridData.flat().filter(a => a && a.hasOwnProperty("name"));
+        let steamPipeCount = 0; // To hold the total count of steam pipes
+        let min_1 = false;
+
+        // List of pipe names
+        const pipeNames = [
+            'steam pipe',
+            'pipe-vertical',
+            'pipe-horizontal',
+            'pipe-4-junction',
+            'pipe-3-junction-L',
+            'pipe-3-junction-R',
+            'pipe-3-junction-U',
+            'pipe-3-junction-D',
+            'pipe-corner-DL',
+            'pipe-corner-DR',
+            'pipe-corner-UL',
+            'pipe-corner-UR'
+        ];
+
+        // Count the pipes
+        pipeNames.forEach(itemName => {
+            const count = filteredData.filter(a => a.name === itemName).length;
+            steamPipeCount += count; // Aggregate count for steam pipes
+        });
+
+        // Display the aggregated count for steam pipes
+        if (steamPipeCount > 0) {
+            count_display.innerHTML += "<b>steam pipes: " + steamPipeCount + "</b><br />";
+            min_1 = true; // Set min_1 to true if there are steam pipes
+        }
+
+        // Count and display other items
+        items.forEach(item => {
+            const count = filteredData.filter(a => a.name === item.name).length;
+            if (count > 0) {
+				if(!item.name.includes('pipe')){
+                count_display.innerHTML += "<b>" + item.name + ": " + count + "</b><br />";
+                min_1 = true; // Set min_1 to true if any item is counted
+				}
+            }
+        });
+
+        if (!min_1) {
+            count_display.innerHTML += "no blocks to count";
+        }
+
+        count_display.style.display = 'block';
+        showingBlockCount = true;
+    } else {
+        count_display.style.display = 'none';
+        count_display.innerHTML = "<h2>block count [BETA]:</h2><br /><br />";
+        showingBlockCount = false;
+    }
+}
+
+
 	
 	
 	
@@ -467,7 +500,7 @@ function resetGrid() {
 			{ name: "steam crossover ULDR" },
 			{ name: "steam scrambler" },      
 			{ name: "steam organ" },			
-            { name: "steam pipe",hide:null}, //not implemented yet
+            { name: "steam pipe"}, //not implemented yet
 			{ name: "steam vent L" },     
 			{ name: "steam vent R" },   	
             { name: "steam revolver" },
@@ -479,7 +512,20 @@ function resetGrid() {
             { name: "steam spikes" },
             { name: "steam lamp" },
            
-			{ name: "copper" }
+			{ name: "copper" },
+
+			{ name: 'steam pipe', hide: null },
+			{ name: 'pipe-vertical', hide: null },
+			{ name: 'pipe-horizontal', hide: null },
+			{ name: 'pipe-4-junction', hide: null },
+			{ name: 'pipe-3-junction-L', hide: null },
+			{ name: 'pipe-3-junction-R', hide: null },
+			{ name: 'pipe-3-junction-U', hide: null },
+			{ name: 'pipe-3-junction-D', hide: null },
+			{ name: 'pipe-corner-DL', hide: null },
+			{ name: 'pipe-corner-DR', hide: null },
+			{ name: 'pipe-corner-UL', hide: null },
+			{ name: 'pipe-corner-UR', hide: null }
         ];
 		
 		
@@ -508,7 +554,20 @@ function resetGrid() {
 			"steam scrambler",
 			
 			"steam door",
-			"steam spikes"
+			"steam spikes",
+
+			'steam pipe',
+			'pipe-vertical',
+			'pipe-horizontal',
+			'pipe-4-junction',
+			'pipe-3-junction-L',
+			'pipe-3-junction-R',
+			'pipe-3-junction-U',
+			'pipe-3-junction-D',
+			'pipe-corner-DL',
+			'pipe-corner-DR',
+			'pipe-corner-UL',
+			'pipe-corner-UR'
         ];
 		
 		
@@ -520,6 +579,14 @@ function resetGrid() {
 			
 			
         ];
+
+		//excluded from pipe connection
+		const excludedBlocks = [
+			"steam revolver",
+			"steam stomper" ,
+			"steam engine L" ,
+			"steam engine R"
+		];
 		
 		const single_powered = [    
             { name: "steam door" },
@@ -536,6 +603,8 @@ function resetGrid() {
         const grid = document.getElementById('grid');
         const fileInput = document.getElementById('file-input');
 
+		let betaWarned = false;
+
         items.forEach(item => {
 			if(item.hasOwnProperty("hide")){
 				return; //equal to continue in forEach
@@ -548,9 +617,28 @@ function resetGrid() {
             img.src = "assets/" + item.name.toLowerCase().replaceAll(" ", "-") + ".png";
             img.alt = item.name;
 			img.title = item.name.replace("ULDR","").replace("URDL","");
+			if(item.name.includes("pipe")){
+				div.style.borderColor = "red"
+				div.style.color = "red"
+				div.style.textContent = "BETA"
+				div.style.fontSize = "5px"
+				
+			}
 
             div.addEventListener('click', () => {
+				if(item.name.includes("pipe")){
+					if(!betaWarned){
+					swal("BETA", "steam pipes are still in very early development and may not function as expected!", "warning");
+					betaWarned = true;
+					}
+
+				}
+
+
+				
                 selectedItem = { name: item.name, orientation: 0 };
+
+
             });
 
             div.appendChild(img);
@@ -580,8 +668,121 @@ function resetGrid() {
 			setTimeout(toggleInventory, 1000);
 			GenerateMainGrid()
 		}
-		
-		
+
+
+
+
+
+		// Array of block names that pipes shouldn't link to
+ // Add the block names here that pipes should not connect to
+
+// Function to manage pipe textures based on neighbors
+function pipeTextureManager() {
+	console.log("called")
+    // Loop through every row and column in the 2D grid
+    if (gridData.flat().length == 0) {
+        return;
+    }
+
+    for (let row = 0; row < gridData.length; row++) {
+        for (let col = 0; col < gridData[row].length; col++) {
+            // Ensure the cell has a 'name' property and it's a pipe
+            if (gridData[row][col] && gridData[row][col].hasOwnProperty('name') && gridData[row][col].name.includes("pipe")) {
+                
+                // Check for pipe adjacency (U = Up, D = Down, L = Left, R = Right)
+                let pipeAdj = {
+                    U: row > 0 && gridData[row - 1][col] && gridData[row - 1][col].hasOwnProperty('name') && !excludedBlocks.includes(gridData[row - 1][col].name),
+                    D: row < gridData.length - 1 && gridData[row + 1][col] && gridData[row + 1][col].hasOwnProperty('name') && !excludedBlocks.includes(gridData[row + 1][col].name),
+                    L: col > 0 && gridData[row][col - 1] && gridData[row][col - 1].hasOwnProperty('name') && !excludedBlocks.includes(gridData[row][col - 1].name),
+                    R: col < gridData[row].length - 1 && gridData[row][col + 1] && gridData[row][col + 1].hasOwnProperty('name') && !excludedBlocks.includes(gridData[row][col + 1].name)
+                };
+
+                // Assign texture and update name based on neighbors
+                if (pipeAdj.U && pipeAdj.D && pipeAdj.L && pipeAdj.R) {
+                    gridData[row][col].name = 'pipe-4-junction';
+                    changeBlockImage(row, col, 'assets/pipe-4-junction.png'); // 4-way junction
+                } else if (pipeAdj.U && pipeAdj.D && pipeAdj.L) {
+                    gridData[row][col].name = 'pipe-3-junction-L';
+                    changeBlockImage(row, col, 'assets/pipe-3-junction-L.png'); // 3-way left junction
+                } else if (pipeAdj.U && pipeAdj.D && pipeAdj.R) {
+                    gridData[row][col].name = 'pipe-3-junction-R';
+                    changeBlockImage(row, col, 'assets/pipe-3-junction-R.png'); // 3-way right junction
+                } else if (pipeAdj.L && pipeAdj.R && pipeAdj.U) {
+                    gridData[row][col].name = 'pipe-3-junction-U';
+                    changeBlockImage(row, col, 'assets/pipe-3-junction-U.png'); // 3-way top junction
+                } else if (pipeAdj.L && pipeAdj.R && pipeAdj.D) {
+                    gridData[row][col].name = 'pipe-3-junction-D';
+                    changeBlockImage(row, col, 'assets/pipe-3-junction-D.png'); // 3-way bottom junction
+                } else if (pipeAdj.L && pipeAdj.R) {
+                    gridData[row][col].name = 'pipe-horizontal';
+                    changeBlockImage(row, col, 'assets/pipe-horizontal.png'); // Horizontal pipe
+                } else if (pipeAdj.U && pipeAdj.D) {
+                    gridData[row][col].name = 'pipe-vertical';
+                    changeBlockImage(row, col, 'assets/pipe-vertical.png'); // Vertical pipe
+                } else if (pipeAdj.U && pipeAdj.R) {
+                    gridData[row][col].name = 'pipe-corner-UR';
+                    changeBlockImage(row, col, 'assets/pipe-corner-UR.png'); // Elbow (Up-Right)
+                } else if (pipeAdj.U && pipeAdj.L) {
+                    gridData[row][col].name = 'pipe-corner-UL';
+                    changeBlockImage(row, col, 'assets/pipe-corner-UL.png'); // Elbow (Up-Left)
+                } else if (pipeAdj.D && pipeAdj.R) {
+                    gridData[row][col].name = 'pipe-corner-DR';
+                    changeBlockImage(row, col, 'assets/pipe-corner-DR.png'); // Elbow (Down-Right)
+                } else if (pipeAdj.D && pipeAdj.L) {
+                    gridData[row][col].name = 'pipe-corner-DL';
+                    changeBlockImage(row, col, 'assets/pipe-corner-DL.png'); // Elbow (Down-Left)
+                }
+            }
+        }
+    }
+}
+
+setInterval(pipeTextureManager,500)
+
+// Function to update pipes after removing/adding
+function updatePipesAfterChange(row, col) {
+    // Check the current position and surrounding neighbors for texture updates
+    const directions = [
+        { r: -1, c: 0 },  // Up
+        { r: 1, c: 0 },   // Down
+        { r: 0, c: -1 },  // Left
+        { r: 0, c: 1 }    // Right
+    ];
+
+    // Update the current pipe (if it exists)
+    pipeTextureManager();
+
+    // Update neighbors
+    directions.forEach(dir => {
+        let newRow = row + dir.r;
+        let newCol = col + dir.c;
+
+        // Check if the new coordinates are valid within the grid
+        if (newRow >= 0 && newRow < gridData.length && newCol >= 0 && newCol < gridData[0].length) {
+            pipeTextureManager();
+        }
+    });
+}
+
+// Call this function after a pipe is removed or added
+function removePipe(row, col) {
+    if (gridData[row][col]) {
+        // Remove the pipe by clearing its name or setting it to something like 'empty'
+        gridData[row][col].name = 'empty';
+        
+        // Clear the texture visually
+        changeBlockImage(row, col, ''); // Assuming this clears the image
+
+        // Update pipes around the removed pipe
+        updatePipesAfterChange(row, col);
+    }
+}
+
+
+
+	
+
+			
 		
 		
 		
@@ -606,14 +807,19 @@ function resetGrid() {
 		//main function to handle placing blocks on the grid
 //main function to handle placing blocks on the grid
 		function placeBlock(cell, i, control="build", saved_value=[]) {
+
+		
+			
 	
 		if(!selectedItem){
 			return
 		}
+		
 			const row = Math.floor(i / 100);
 			const col = i % 100;
 
 			if (cell.hasChildNodes()) {
+				
 				cell.innerHTML = '';
 				cell.style.border = '2px groove  rgba(0,230,230,0.4)';
 				cell.style.filter = ''; // Remove the shadow
@@ -626,7 +832,9 @@ function resetGrid() {
 				}
 			} else if (selectedItem &&selectedItem.hasOwnProperty("name")) {
 		
+				
 				const img = document.createElement('img');
+				if (!selectedItem.name.includes("pipe"))
 				img.src = "assets/" + selectedItem.name.toLowerCase().replaceAll(" ", "-") + ".png";
 				img.alt = selectedItem.name;
 				cell.appendChild(img);
@@ -638,8 +846,37 @@ function resetGrid() {
 				//handling how the object should be, depending on block
 				//this can be overwritten later
 				gridData[row][col] = {
-					name: selectedItem.name
+					name: selectedItem.name //every block will have a name regardless of type
 				};
+
+
+
+
+				//pipe being placed, handler 
+				if (selectedItem.name.includes("pipe")) {
+					//console.log('attempt advanced pipe placement')
+					gridData[row][col] = {name: selectedItem.name};
+					img.src = "assets/" + "pipe-vertical" + ".png";
+
+					pipeAdj = {
+						U: gridData[row-1][col] && gridData[row-1][col].hasOwnProperty('name') && gridData[row-1][col].name.includes("pipe") ,
+						D: gridData[row+1][col] && gridData[row+1][col].hasOwnProperty('name') && gridData[row+1][col].name.includes("pipe") ,
+						L: gridData[row][col-1] && gridData[row][col-1].hasOwnProperty('name') && gridData[row][col-1].name.includes("pipe") ,
+						R: gridData[row][col+1] && gridData[row][col+1].hasOwnProperty('name') && gridData[row][col+1].name.includes("pipe") 
+					}
+
+
+
+
+					if(pipeAdj.L || pipeAdj.R){
+						img.src = "assets/" + "pipe-horizontal" + ".png";
+					}
+				}
+
+
+
+
+
 
 
 				//handle valve block placement
@@ -1366,16 +1603,21 @@ function resetGrid() {
 				//adjacent cells validity checks
 				let ValidArr = {
 				  U: adjCells[0] !== null && adjCells[0] !== undefined && adjCells[0].hasOwnProperty('name') &&
-					 (standard_behaviour.includes(adjCells[0].name) || adjCells[0].name.includes("funnel")), // up
+					 (standard_behaviour.includes(adjCells[0].name) || adjCells[0].name.includes("funnel")  || adjCells[0].name.includes("pipe")),
+					//up
 
 				  D: adjCells[1] !== null && adjCells[1] !== undefined && adjCells[1].hasOwnProperty('name') &&
-					 (standard_behaviour.includes(adjCells[1].name) || adjCells[1].name.includes("funnel")), // down
+					 (standard_behaviour.includes(adjCells[1].name) || adjCells[1].name.includes("funnel") || adjCells[1].name.includes("pipe")),
+					  //down
+					 
 
 				  L: adjCells[2] !== null && adjCells[2] !== undefined && adjCells[2].hasOwnProperty('name') &&
-					 (standard_behaviour.includes(adjCells[2].name) || adjCells[2].name.includes("funnel")), // left
+					 (standard_behaviour.includes(adjCells[2].name) || adjCells[2].name.includes("funnel")  || adjCells[2].name.includes("pipe")),
+					 //left
 
 				  R: adjCells[3] !== null && adjCells[3] !== undefined && adjCells[3].hasOwnProperty('name') &&
-					 (standard_behaviour.includes(adjCells[3].name) || adjCells[3].name.includes("funnel"))  // right
+					 (standard_behaviour.includes(adjCells[3].name) || adjCells[3].name.includes("funnel")  || adjCells[3].name.includes("pipe")),
+					 //right
 				};
 
 				if(this.distance_moved >= this.max_puff_distance){
