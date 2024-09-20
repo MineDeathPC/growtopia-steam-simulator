@@ -68,9 +68,9 @@
 
 
 	//important constants
-		const global_true_puff_speed = 100 //0.1s default
+		const global_true_puff_speed = 99 //0.1s default
 		const collector_puff_speed = 300;//0.3s (default)
-		const max_puff_distance = 99;//99 (based on game)
+		const max_puff_distance = 100;//99 (based on game)
 		const global_collector_max_duration = 20000; //20s, 20000ms (based on game)
 		const global_vent_max_duration = 3000 //3 sec (based on game)
 		const global_organ_max_duration = 110; 
@@ -1268,12 +1268,13 @@ function resetGrid() {
 					// Create and display a new steam puff element
 					const puffElement = document.createElement('div');
 					puffElement.id = "puff-" + this.unique_id
-					puffElement.textContent = (this.max_puff_distance-this.distance_moved) + "\n"+this.current_direction
+					
 					puffElement.style.opacity = 0.7
 					puffElement.classList.add('steam-puff');
 					puffElement.style.top = '0px'; 
 					puffElement.style.left = '0px'; 
 					this.distance_moved+=1
+					puffElement.textContent = (this.max_puff_distance-this.distance_moved) + "\n"+this.current_direction
 					let scaledValue = Math.round((this.distance_moved / 99) * 255); // Scale distance to 1-255 range
 					puffElement.style.backgroundColor = "rgb(" + scaledValue + "," + (255 - scaledValue) + ",90)";
 					this.ele = puffElement;
@@ -2044,6 +2045,7 @@ if(this.distance_moved >= this.max_puff_distance){
 			
 			//change puff position in grid
 				changePosition(newDirection, newRow, newCol) {
+					
 				// Get the current cell and new cell in the grid
 				const currentCell = document.getElementById(`grid-cell-${this.position.row * 100 + this.position.col}`);
 				const newCellIndex = newRow * 100 + newCol;
@@ -2062,8 +2064,23 @@ if(this.distance_moved >= this.max_puff_distance){
 						puffElement.style.top = "0px"
 						puffElement.style.left = "0px"
 						this.current_direction = newDirection;
-						//increment distance moved
-						this.distance_moved += 1;
+						
+						
+						console.log(this.position.col+","+newCol+"|"+this.position.row+","+newRow)
+						if(!(newRow==this.position.row&&newCol==this.position.col)){
+							//increment distance moved
+							if(this.distance_moved+1 >= this.max_puff_distance){
+								console.log('max')
+								this.kill_puff()
+								return;
+							}
+							this.distance_moved += 1;
+						}
+						else{
+							console.log('increment prevention!')
+						}
+
+
 						let scaledValue = Math.round((this.distance_moved / 99) * 255); // Scale distance to 1-255 range
 						puffElement.style.backgroundColor = "rgb(" + scaledValue + "," + (255 - scaledValue) + ",90)";
 						puffElement.textContent = (this.max_puff_distance-this.distance_moved) + "\n"+this.current_direction
