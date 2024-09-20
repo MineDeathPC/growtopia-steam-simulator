@@ -42,7 +42,7 @@
     <button id="toggle-hint" onclick="toggleInventory()">Tap or press I to open/close Inventory</button>
 	<h3 id="puff-counter" title="how many active steam puffs are present">Active steam puff count: 0</h3>
 	<button id="block-counter-button" onclick="toggleBlockCount()" title="how many blocks of each type are present on the grid">view block count</button>
-	<div id="block-count-display">block count: <br /><br /> </div>
+	<div id="block-count-display"><h2>block count: </h2><br /><br /> </div>
 
     <!-- Toggle Grid Button -->
     <button id="show_grid_button" alt="toggle grid" onclick="mobileToggle()">Hide Grid (G)</button>
@@ -70,7 +70,7 @@
 	//important constants
 		const global_true_puff_speed = 99 //0.1s default
 		const collector_puff_speed = 300;//0.3s (default)
-		const max_puff_distance = 100;//99 (based on game)
+		const max_puff_distance = 100;//99+1 (based on game)
 		const global_collector_max_duration = 20000; //20s, 20000ms (based on game)
 		const global_vent_max_duration = 3000 //3 sec (based on game)
 		const global_organ_max_duration = 110; 
@@ -79,6 +79,7 @@
 		const global_engine_interval = 3000; //3s, 3000ms (based on game)
 		const block_shadow_style = "drop-shadow(3.5px 3.5px 1.5px rgba(0, 0, 0, 0.7))"; //5px 2px 2px rgba(0, 0, 0, 0.7)
 									//horizontal, vertical, blur
+		
 
 
 
@@ -374,7 +375,7 @@ function resetGrid() {
 				
 				console.log(filteredData)
 				if((filteredData.filter(a=>a.name==item.name)).length > 0){
-					count_display.innerHTML += item.name + ": " + (filteredData.filter(a=>a.name==item.name)).length + "<br />";
+					count_display.innerHTML += "<b>" + item.name + ": " + (filteredData.filter(a=>a.name==item.name)).length + "</b><br />";
 					min_1 = true
 				}
      	   });
@@ -387,7 +388,7 @@ function resetGrid() {
 			}
 			else{
 				count_display.style.display = 'none'
-				count_display.innerHTML = "block count:<br /><br />";
+				count_display.innerHTML = "<h2>block count:</h2><br /><br />";
 				showingBlockCount = false
 			}
 		}
@@ -666,8 +667,9 @@ function resetGrid() {
 					button.classList.add("activators");
 					button.textContent = "▶️";
 
-					button.style.top = `${Math.floor(i / 100) * 40}px`;
-					button.style.left = `${(i % 100) * 40}px`;
+					//controls activator button location
+					button.style.top = `${Math.floor(i / 100) * 41}px`;
+					button.style.left = `${(i % 100) * 41}px`;
 					
 					
 					
@@ -772,8 +774,8 @@ function resetGrid() {
 					button.id = `activator-${i}`;
 					button.classList.add("activators");
 					button.textContent = "️🔄";
-					button.style.top = `${Math.floor(i / 100) * 40}px`;
-					button.style.left = `${(i % 100) * 40}px`;
+					button.style.top = `${Math.floor(i / 100) * 41}px`;
+					button.style.left = `${(i % 100) * 41}px`;
 
 					button.addEventListener("click", () => {
 						crank.toggleFlow();
@@ -803,8 +805,8 @@ function resetGrid() {
 					button.id = `activator-${i}`;
 					button.classList.add("activators");
 					button.textContent = "️🔘";
-					button.style.top = `${Math.floor(i / 100) * 40}px`;
-					button.style.left = `${(i % 100) * 40}px`;
+					button.style.top = `${Math.floor(i / 100) * 41}px`;
+					button.style.left = `${(i % 100) * 41}px`;
 
 					// Add event listener to toggle the state
 					button.addEventListener("click", () => {
@@ -827,8 +829,8 @@ function resetGrid() {
 					button.id = `activator-${i}`;
 					button.classList.add("activators");
 					button.textContent = "️⏮";
-					button.style.top = `${Math.floor(i / 100) * 40}px`;
-					button.style.left = `${(i % 100) * 40}px`;
+					button.style.top = `${Math.floor(i / 100) * 41}px`;
+					button.style.left = `${(i % 100) * 41}px`;
 
 					// Add event listener to toggle the state
 					button.addEventListener("click", () => {
@@ -880,8 +882,11 @@ function resetGrid() {
 
 			  
 
+
+
+
+
 		//get data of blocks adjacent to input (row,col)
-		
 		let adjLatency = {}
 		function adj(row, col) {
 			let unique_1 = unique(20)
@@ -939,6 +944,10 @@ function resetGrid() {
 			R:">"
 		}
 		
+
+
+
+
 		
 		let blockDatasLatency = {}
 		function getBlockData(row,col){
@@ -1291,12 +1300,15 @@ function resetGrid() {
 		//method to kill puff
 		kill_puff(){	
 		try{
-				console.log(document.getElementById("puff-" + this.unique_id))
+				console.log(document.getElementById("puff-" + this.unique_id));
 				document.getElementById("puff-" + this.unique_id).remove();
-				Steam_Puffs.splice(Steam_Puffs.indexOf(Steam_Puffs.filter(a=>a.unique_id==this.unique_id)[0]),1);
+				Steam_Puffs.splice(Steam_Puffs.indexOf(Steam_Puffs.filter(a=>a.unique_id==this.unique_id)[0]),1);	
+				Steam_Puffs.splice(Steam_Puffs.indexOf(this),1);		
 				document.getElementById('puff-counter').innerHTML = "Active steam puff count: " + Steam_Puffs.length;
 				}
 				catch(e){
+					console.log("error killing : " + e)
+					Steam_Puffs.splice(Steam_Puffs.indexOf(Steam_Puffs.filter(a=>a.unique_id==this.unique_id)[0]),1);		
 					document.getElementById('puff-counter').innerHTML = "Active steam puff count: " + Steam_Puffs.length;
 					return
 				}
@@ -1318,6 +1330,13 @@ function resetGrid() {
 		
 		//recursive motion function
 			recursive_move(){
+			if(!document.getElementById("puff-" + this.unique_id)){
+				this.kill_puff()
+				console.log(Steam_Puffs.length)
+				return;
+			}
+
+
 			if(this.distance_moved >= this.max_puff_distance){
 				console.log('max')
 				this.kill_puff()
@@ -1965,7 +1984,7 @@ if (gridData[this.position.row][this.position.col].name.includes('collector')) {
 if(this.distance_moved >= this.max_puff_distance){
 				this.kill_puff()
 				return;
-				}
+}
 			
 
 
@@ -2045,6 +2064,7 @@ if(this.distance_moved >= this.max_puff_distance){
 			
 			//change puff position in grid
 				changePosition(newDirection, newRow, newCol) {
+				document.getElementById('puff-counter').innerHTML = "Active steam puff count: " + Steam_Puffs.length;
 					
 				// Get the current cell and new cell in the grid
 				const currentCell = document.getElementById(`grid-cell-${this.position.row * 100 + this.position.col}`);
