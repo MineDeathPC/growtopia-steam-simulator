@@ -210,6 +210,39 @@
 	font-size       : 8px;
 }
 
+#block-counter-button{
+	display         : block;
+	position        : fixed;
+	top             : 75px;
+	left            : 10px;
+	z-index         : 10;
+	color           : #b3ff00;
+	background-color: rgba(0, 0, 0, 0.3);
+	font-family     : 'Roboto Mono', monospace;
+	padding         : 5px 10px;
+	border-radius   : 5px;
+	font-size       : 8px;
+}
+
+#block-count-display{
+	display         : none;
+	position        : fixed;
+	top             : 50%;
+	left            : 50%;
+	width:50%;
+	height:50%;
+	transform:translate(-50%,-50%);
+	z-index         : 10;
+	color           : #b3ff00;
+	background-color: rgba(1, 36, 77, 0.75);
+	font-family     : 'Roboto Mono', monospace;
+	padding         : 5px 10px;
+	border-radius   : 0px;
+	border:15px double rgba(0, 255, 115, 0.719);
+	font-size       : 12px;
+	overflow-y:scroll;
+}
+
   #top-bar {
   	position        : fixed;
   	width           : 100%;

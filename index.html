@@ -40,11 +40,12 @@
 
     <!-- Hint text for showing inventory -->
     <button id="toggle-hint" onclick="toggleInventory()">Tap or press I to open/close Inventory</button>
-	<h3 id="puff-counter">Active steam puff count: 0</h3>
-	
+	<h3 id="puff-counter" title="how many active steam puffs are present">Active steam puff count: 0</h3>
+	<button id="block-counter-button" onclick="toggleBlockCount()" title="how many blocks of each type are present on the grid">view block count</button>
+	<div id="block-count-display">block count: <br /><br /> </div>
 
     <!-- Toggle Grid Button -->
-    <button id="show_grid_button" alt="toggle grid" onclick="mobileToggle()">Toggle Grid (G)</button>
+    <button id="show_grid_button" alt="toggle grid" onclick="mobileToggle()">Hide Grid (G)</button>
 	
 	 
      <button id="save_build_button" onclick="saveBuild()">Save Build</button>
@@ -63,21 +64,21 @@
 <script src = "sweetalert.js"></script>
 <script src = "index.js"></script>
 <script>
+
+
+
 	//important constants
 		const global_true_puff_speed = 100 //0.1s default
 		const collector_puff_speed = 300;//0.3s (default)
-		const max_puff_distance = 99;//99 (based on actual game)
-		const global_collector_max_duration = 20000; //20s, 20000ms
-		const global_vent_max_duration = 3000 //3 sec
-		const global_organ_max_duration = 110;
+		const max_puff_distance = 99;//99 (based on game)
+		const global_collector_max_duration = 20000; //20s, 20000ms (based on game)
+		const global_vent_max_duration = 3000 //3 sec (based on game)
+		const global_organ_max_duration = 110; 
 		const global_organ_frequency = 500;
-		const global_lamp_max_duration = 10000; //10s, 10000ms
-		const global_engine_interval = 3000; //3s
-		
-
-
-
-
+		const global_lamp_max_duration = 10000; //10s, 10000ms (based on game)
+		const global_engine_interval = 3000; //3s, 3000ms (based on game)
+		const block_shadow_style = "drop-shadow(3.5px 3.5px 1.5px rgba(0, 0, 0, 0.7))"; //5px 2px 2px rgba(0, 0, 0, 0.7)
+									//horizontal, vertical, blur
 
 
 
@@ -322,12 +323,16 @@ function resetGrid() {
 		function showGridBorder() {
 			Array.from(document.getElementsByClassName("grid-cell")).forEach((e)=>{
 				e.style.border = "2px groove rgba(0,0,0,0)"
+				document.getElementById('show_grid_button').innerHTML = "Show Grid (G)"
+				document.getElementById('show_grid_button').style.backgroundColor = "indigo"
 			})
 		}
 
 		function hideGridBorder() {
 		Array.from(document.getElementsByClassName("grid-cell")).forEach((e)=>{
 			 e.style.border = "2px groove rgba(0,230,230,0.4)"
+			 document.getElementById('show_grid_button').innerHTML = "Hide Grid (G)"
+			 document.getElementById('show_grid_button').style.backgroundColor = "violet"
 			 })
 		}
 
@@ -344,24 +349,54 @@ function resetGrid() {
 		grid_view_toggle = !grid_view_toggle;
 				if (grid_view_toggle) {
 					showGridBorder()
+					
 				} else {
 					hideGridBorder()
+				
 				}
 		}
 	
 	
 	
+
+		//show block count function NEW
+		showingBlockCount = false;
+		function toggleBlockCount(){
+			
+			let count_display = document.getElementById("block-count-display");
+			if(!showingBlockCount){
+				let filteredData = gridData.flat().filter(a=>a && a.hasOwnProperty("name"));
+				let min_1 = false;
+				items.forEach(item => {
+				if(item.hasOwnProperty("hide")){
+					return; //equal to continue in forEach
+					}
+				
+				console.log(filteredData)
+				if((filteredData.filter(a=>a.name==item.name)).length > 0){
+					count_display.innerHTML += item.name + ": " + (filteredData.filter(a=>a.name==item.name)).length + "<br />";
+					min_1 = true
+				}
+     	   });
+		   		if(!min_1){
+					count_display.innerHTML += "no blocks to count"
+				}
+
+			count_display.style.display = 'block'
+			showingBlockCount = true
+			}
+			else{
+				count_display.style.display = 'none'
+				count_display.innerHTML = "block count:<br /><br />";
+				showingBlockCount = false
+			}
+		}
 	
 	
 	
 	
         let inventoryVisible = false;
 
-
-		
-		
-		
-		
         function toggleInventory() {
             const invCont = document.getElementById('inv-cont');
             const toggleHint = document.getElementById('toggle-hint');
@@ -596,7 +631,7 @@ function resetGrid() {
 				cell.appendChild(img);
 				cell.style.border = 'none';
 				 // Add a shadow effect
-				 cell.style.filter = "drop-shadow(5px 2px 2px rgba(0, 0, 0, 0.7))"
+				 cell.style.filter = block_shadow_style
 				
 
 				//handling how the object should be, depending on block
@@ -1233,7 +1268,7 @@ function resetGrid() {
 					// Create and display a new steam puff element
 					const puffElement = document.createElement('div');
 					puffElement.id = "puff-" + this.unique_id
-					puffElement.innerHTML = this.current_direction
+					puffElement.textContent = (this.max_puff_distance-this.distance_moved) + "\n"+this.current_direction
 					puffElement.style.opacity = 0.7
 					puffElement.classList.add('steam-puff');
 					puffElement.style.top = '0px'; 
@@ -1499,6 +1534,11 @@ function resetGrid() {
 					 if(!gridData[this.position.row][this.position.col].name.includes("funnel"))
 				 ValidArr.L = null
 				}
+
+
+
+
+
 				
 				
 				if(adjCells[2]){
@@ -1829,7 +1869,7 @@ function resetGrid() {
 				
 				//steam scrambler system
 				if(gridData[this.position.row][this.position.col].name.includes('scrambler')){
-					console.log('steam scrambler system active')
+					console.log('steam scrambler system active')				
 					
 					let possibleKeys = Object.keys(ValidArr).filter(key => 
 					  ValidArr[key] != null && ValidArr[key] != 'null' && ValidArr[key] != false
@@ -1848,6 +1888,7 @@ function resetGrid() {
 					let randomKey = possibleKeys[Math.floor(Math.random() * possibleKeys.length)]
 					console.log('selected output: '+ randomKey)
 					this.changePosition(randomKey,this.position.row,this.position.col)
+				
 				}
 			
 			
@@ -1855,14 +1896,15 @@ function resetGrid() {
 
 if (gridData[this.position.row][this.position.col].name.includes('collector')) {
     const possibleKeys = Object.keys(ValidArr).filter(key => ValidArr[key]);
+	const current_collector = gridData[this.position.row][this.position.col];
 
-    if (possibleKeys.length >= 2) {
-        const current_collector = gridData[this.position.row][this.position.col];
-
+    if (possibleKeys.length >= 2 && current_collector.puffs.length < possibleKeys.length) {
+        
         // Add puff to collector if it's not already present
         if (!current_collector.puffs.some(puff => puff.unique_id === this.unique_id)) {
             current_collector.puffs.push(this);
-
+			document.getElementById("puff-"+this.unique_id).style.backgroundColor = 'violet'
+			document.getElementById("puff-"+this.unique_id).textContent = this.max_puff_distance-this.distance_moved+"\nwait"
             // Set a 20-second timer to remove the puff if it stays too long
             this.timeoutId = setTimeout(() => {
                 current_collector.puffs = current_collector.puffs.filter(p => p.unique_id !== this.unique_id);
@@ -2024,7 +2066,7 @@ if(this.distance_moved >= this.max_puff_distance){
 						this.distance_moved += 1;
 						let scaledValue = Math.round((this.distance_moved / 99) * 255); // Scale distance to 1-255 range
 						puffElement.style.backgroundColor = "rgb(" + scaledValue + "," + (255 - scaledValue) + ",90)";
-						puffElement.innerHTML = this.distance_moved + "-"+this.current_direction
+						puffElement.textContent = (this.max_puff_distance-this.distance_moved) + "\n"+this.current_direction
 
 						this.foundSpot = true;
 						newCell.appendChild(puffElement);
