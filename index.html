@@ -839,6 +839,7 @@ function removePipe(row, col) {
 				img.alt = selectedItem.name;
 				cell.appendChild(img);
 				cell.style.border = 'none';
+				cell.style.borderWidth = '0px'
 				 // Add a shadow effect
 				 cell.style.filter = block_shadow_style
 				
@@ -868,9 +869,14 @@ function removePipe(row, col) {
 
 
 
-					if(pipeAdj.L || pipeAdj.R){
-						img.src = "assets/" + "pipe-horizontal" + ".png";
-					}
+						if(pipeAdj.L || pipeAdj.R){
+							img.src = "assets/" + "pipe-horizontal" + ".png";
+						}
+						else if(pipeAdj.U || pipeAdj.D){
+							
+							img.src = "assets/" + "pipe-vertical" + ".png";
+						}
+						
 				}
 
 
