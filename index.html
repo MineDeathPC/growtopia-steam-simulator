@@ -79,6 +79,7 @@
 		const global_engine_interval = 3000; //3s, 3000ms (based on game)
 		const block_shadow_style = "drop-shadow(3.5px 3.5px 1.5px rgba(0, 0, 0, 0.7))"; //5px 2px 2px rgba(0, 0, 0, 0.7)
 									//horizontal, vertical, blur
+		const intial_grid_border_style = " 1px solid rgba(0, 230, 230, 0.7)";
 		
 
 
@@ -241,7 +242,7 @@ function resetGrid_button() {
 			const cell = document.getElementById(`grid-cell-${i}`);
 			if (cell) {
 				cell.innerHTML = '';
-				cell.style.border = '2px groove rgba(0, 230, 230, 0.4)';
+				cell.style.border = intial_grid_border_style;
 				cell.style.filter = ''
 				let existingButton = document.getElementById(`activator-${i}`);
 					if (existingButton) {
@@ -270,7 +271,7 @@ function resetGrid() {
 			const cell = document.getElementById(`grid-cell-${i}`);
 			if (cell) {
 				cell.innerHTML = '';
-				cell.style.border = '2px groove rgba(0, 230, 230, 0.4)';
+				cell.style.border = intial_grid_border_style;
 				cell.style.filter = ''
 				let existingButton = document.getElementById(`activator-${i}`);
 					if (existingButton) {
@@ -525,7 +526,11 @@ function toggleBlockCount() {
 			{ name: 'pipe-corner-DL', hide: null },
 			{ name: 'pipe-corner-DR', hide: null },
 			{ name: 'pipe-corner-UL', hide: null },
-			{ name: 'pipe-corner-UR', hide: null }
+			{ name: 'pipe-corner-UR', hide: null },
+			{ name: 'pipe-isolated-L', hide: null },
+			{ name: 'pipe-isolated-R', hide: null },
+			{ name: 'pipe-isolated-U', hide: null },
+			{ name: 'pipe-isolated-D', hide: null }
         ];
 		
 		
@@ -567,7 +572,11 @@ function toggleBlockCount() {
 			'pipe-corner-DL',
 			'pipe-corner-DR',
 			'pipe-corner-UL',
-			'pipe-corner-UR'
+			'pipe-corner-UR',
+			'pipe-isolated-L',
+			'pipe-isolated-R',
+			'pipe-isolated-U',
+			'pipe-isolated-D'
         ];
 		
 		
@@ -678,7 +687,7 @@ function toggleBlockCount() {
 
 // Function to manage pipe textures based on neighbors
 function pipeTextureManager() {
-	console.log("called")
+    console.log("called")
     // Loop through every row and column in the 2D grid
     if (gridData.flat().length == 0) {
         return;
@@ -731,6 +740,34 @@ function pipeTextureManager() {
                 } else if (pipeAdj.D && pipeAdj.L) {
                     gridData[row][col].name = 'pipe-corner-DL';
                     changeBlockImage(row, col, 'assets/pipe-corner-DL.png'); // Elbow (Down-Left)
+                } 
+				else if (pipeAdj.U && pipeAdj.D) {
+                    gridData[row][col].name = 'pipe-vertical';
+                    changeBlockImage(row, col, 'assets/pipe-vertical.png'); // Elbow (Down-Left)
+                } 
+				else if (pipeAdj.R && pipeAdj.L) {
+                    gridData[row][col].name = 'pipe-horizontal';
+                    changeBlockImage(row, col, 'assets/pipe-horizontal.png'); // Elbow (Down-Left)
+                }
+				else if (pipeAdj.L) {
+                    gridData[row][col].name = 'pipe-isolated-R';
+                    changeBlockImage(row, col, 'assets/pipe-isolated-R.png'); // Elbow (Down-Left)
+                }
+				else if (pipeAdj.R) {
+                    gridData[row][col].name = 'pipe-isolated-L';
+                    changeBlockImage(row, col, 'assets/pipe-isolated-L.png'); // Elbow (Down-Left)
+                }
+				else if (pipeAdj.D) {
+                    gridData[row][col].name = 'pipe-isolated-U';
+                    changeBlockImage(row, col, 'assets/pipe-isolated-U.png'); // Elbow (Down-Left)
+                }
+				else if (pipeAdj.U) {
+                    gridData[row][col].name = 'pipe-isolated-D';
+                    changeBlockImage(row, col, 'assets/pipe-isolated-D.png'); // Elbow (Down-Left)
+                }
+				else {
+                    gridData[row][col].name = 'steam-pipe.png';
+                    changeBlockImage(row, col, 'assets/steam-pipe.png'); // No pipe, clear image
                 }
             }
         }
@@ -750,32 +787,25 @@ function updatePipesAfterChange(row, col) {
     ];
 
     // Update the current pipe (if it exists)
-    pipeTextureManager();
+    pipeTextureManager(); // Apply texture manager to all pipes in the grid
 
-    // Update neighbors
+    // Update neighbors recursively
     directions.forEach(dir => {
         let newRow = row + dir.r;
         let newCol = col + dir.c;
 
         // Check if the new coordinates are valid within the grid
         if (newRow >= 0 && newRow < gridData.length && newCol >= 0 && newCol < gridData[0].length) {
-            pipeTextureManager();
+            pipeTextureManager(); // Apply the pipe texture manager to neighbors
         }
     });
 }
 
-// Call this function after a pipe is removed or added
-function removePipe(row, col) {
-    if (gridData[row][col]) {
-        // Remove the pipe by clearing its name or setting it to something like 'empty'
-        gridData[row][col].name = 'empty';
-        
-        // Clear the texture visually
-        changeBlockImage(row, col, ''); // Assuming this clears the image
 
-        // Update pipes around the removed pipe
+// Call this function after a pipe is removed or added
+function removePipe(row, col) {  
+	console.log('remove')
         updatePipesAfterChange(row, col);
-    }
 }
 
 
@@ -789,7 +819,7 @@ function removePipe(row, col) {
 		
 		//changing image of a block in grid at row,col
 		let image_change_queue = {}
-		function changeBlockImage(row, col, image) {
+		function changeBlockImage(row, col, image, rotation = 0) {
 			let unique_1 = unique(25)
 			image_change_queue[unique_1] = function(){
 				const cell = document.getElementById(`grid-cell-${row * 100 + col}`);
@@ -797,6 +827,7 @@ function removePipe(row, col) {
 					const img = cell.querySelector('img');
 					if (img) {
 						img.src = image;
+						img.style.transform = `rotate(${rotation}deg)`;
 					}
 				}			
 			}
@@ -817,6 +848,7 @@ function removePipe(row, col) {
 		
 			const row = Math.floor(i / 100);
 			const col = i % 100;
+			removePipe(row, col) 
 
 			if (cell.hasChildNodes()) {
 				
@@ -876,6 +908,8 @@ function removePipe(row, col) {
 							
 							img.src = "assets/" + "pipe-vertical" + ".png";
 						}
+
+						
 						
 				}
 
@@ -951,7 +985,12 @@ function removePipe(row, col) {
 								if (!gridData[row][col].active) {
 									// Start the interval if not active
 									gridData[row][col].interval = setInterval(() => {
-										steamSystem_main4(Math.floor(i / 100), i % 100);
+										if(gridData[row][col] && gridData[row][col].hasOwnProperty('name') && gridData[row][col].name.includes('engine L')){
+											steamSystem_main4(Math.floor(i / 100), i % 100);
+										}
+										else{
+											clearInterval(	gridData[row][col].interval )
+										}
 									}, global_engine_interval);
 									steamSystem_main4(Math.floor(i / 100), i % 100);
 									
@@ -980,7 +1019,12 @@ function removePipe(row, col) {
 								if (!gridData[row][col].active) {
 									// Start the interval if not active
 									gridData[row][col].interval = setInterval(() => {
+										if(gridData[row][col] && gridData[row][col].hasOwnProperty('name') && gridData[row][col].name.includes('engine R')){
 										steamSystem_main3(Math.floor(i / 100), i % 100);
+										}
+										else{
+											clearInterval(	gridData[row][col].interval )
+										}
 									}, global_engine_interval);
 									steamSystem_main3(Math.floor(i / 100), i % 100);
 									

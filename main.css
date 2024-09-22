@@ -125,7 +125,7 @@
   	/* 100 columns with each cell 40px wide */
   	grid-template-rows   : repeat(100, 40px);
   	/* 100 rows with each cell 40px tall */
-  	gap                  : 1px;
+  	gap: 0px;
   	position             : absolute;
   	top                  : 0;
   	left                 : 0;
@@ -133,18 +133,22 @@
   }
 
   .grid-cell {
-  	width   : 40px;
-  	height  : 40px;
-  	border  : 2px groove rgba(0, 230, 230, 0.4);
+  	width   : 40.5px;
+  	height  : 40.5px;
+	  object-position:center;
+  	border  : 1px solid rgba(0, 230, 230, 0.7);
   	position: relative;
   	/* For positioning steam puffs */
   	overflow: hidden;
+	margin:0px;
+	padding:0px;
   }
 
   .grid-cell img {
   	width     : 100%;
   	height    : 100%;
-  	object-fit:cover;
+	object-position:center;
+
 	margin:0px;
 	padding:0px;
   }
