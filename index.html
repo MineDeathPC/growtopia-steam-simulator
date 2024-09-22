@@ -39,8 +39,8 @@
    
 
     <!-- Hint text for showing inventory -->
-    <button id="toggle-hint" onclick="toggleInventory()">Tap or press I to open/close Inventory</button>
-	<h3 id="puff-counter" title="how many active steam puffs are present">Active steam puff count: 0</h3>
+    <button id="toggle-hint" onclick="toggleInventory()">Tap or press 'I' to open inventory</button>
+	<h3 id="puff-counter" title="how many active steam puffs are present">Active steam puffs: 0</h3>
 	<button id="block-counter-button" onclick="toggleBlockCount()" title="how many blocks of each type are present on the grid">view block count</button>
 	<div id="block-count-display"><h2>block count [BETA]: </h2><br /><br /> </div>
 
@@ -51,6 +51,7 @@
      <button id="save_build_button" onclick="saveBuild()">Save Build</button>
 	 <button id="load_build_button" onclick="loadBuild()">Load Build</button>
 	 <button id="reset_grid_button" onclick="resetGrid_button()">Reset Grid</button>
+	 <button id='multi_activate_button' onclick = 'multiActivate()'>◀️</button>
 	 <button id="load_example_build_button" style="display:none;">Load Examples</button>
     <div id="example-builds-container" style="display:none; position:fixed; width:50%; height:50%; z-index:15; top:50%; left:50%; transform:translate(-50%, -50%); padding:20px; background:white; border:1px solid 	#ccc; box-shadow:0px 0px 10px rgba(0, 0, 0, 0.1);"></div>
 	
@@ -80,7 +81,14 @@
 		const block_shadow_style = "drop-shadow(3.5px 3.5px 1.5px rgba(0, 0, 0, 0.7))"; //5px 2px 2px rgba(0, 0, 0, 0.7)
 									//horizontal, vertical, blur
 		const intial_grid_border_style = " 1px solid rgba(0, 230, 230, 0.7)";
+		const pipe_texture_update_interval = 400;
+
+
 		initial_grid_border_style = intial_grid_border_style;
+
+
+
+		
 
 
 
@@ -301,7 +309,7 @@ function resetGrid() {
 
 
 
-		//audio controls
+		
 		
 		// Create an AudioContext		
 		let audioContext = null;
@@ -344,31 +352,31 @@ function resetGrid() {
 
 
 
+		
+		//scrolling with hold click system
+		let isScrolling = false; 
+		let scrollSpeed = 1; // Speed of scrolling
 
-		let isScrolling = false; // Flag to track if the user is holding the click
-let scrollSpeed = 1; // Speed of scrolling
 
-// Start scrolling when the mouse button is held down
-document.addEventListener('mousedown', function(e) {
-    isScrolling = true; // Enable scrolling
-});
+		document.addEventListener('mousedown', function(e) {
+			isScrolling = true; // Enable scrolling
+		});
 
-// Stop scrolling when the mouse button is released
-document.addEventListener('mouseup', function(e) {
-    isScrolling = false; // Disable scrolling
-});
 
-// Scroll the page while the mouse moves and the click is held
-document.addEventListener('mousemove', function(e) {
-    if (isScrolling) {
-        // Get the mouse movement direction
-        let x = -1*e.movementX;
-        let y = -1*e.movementY;
+		document.addEventListener('mouseup', function(e) {
+			isScrolling = false; // Disable scrolling
+		});
 
-        // Scroll the page in the direction of the mouse movement
-        window.scrollBy(x * scrollSpeed, y * scrollSpeed);
-    }
-});
+
+		document.addEventListener('mousemove', function(e) {
+			if (isScrolling) {
+				// Get the mouse movement direction
+				let x = -1*e.movementX;
+				let y = -1*e.movementY;
+				
+				window.scrollBy(x * scrollSpeed, y * scrollSpeed);
+			}
+		});
 
 
 
@@ -393,11 +401,8 @@ document.addEventListener('mousemove', function(e) {
 	
 	
 
-		//show block count function NEW
-		showingBlockCount = false;
-
-		showingBlockCount = false;
-
+//toggle block count system
+showingBlockCount = false;
 function toggleBlockCount() {
     let count_display = document.getElementById("block-count-display");
     
@@ -466,18 +471,18 @@ function toggleBlockCount() {
 	
 	
 	
+		//toggle inventory visibility system
         let inventoryVisible = false;
-
         function toggleInventory() {
             const invCont = document.getElementById('inv-cont');
             const toggleHint = document.getElementById('toggle-hint');
             
             if (inventoryVisible) {
                 invCont.style.display = 'none';
-               // toggleHint.style.display = 'block'; // Show the hint text
+				toggleHint.innerHTML = "Tap or press 'I' to open inventory"
             } else {
                 invCont.style.display = 'block';
-               // toggleHint.style.display = 'none'; // Hide the hint text
+				toggleHint.innerHTML = "Tap or press 'I' to close inventory"
             }
 
             inventoryVisible = !inventoryVisible; // Toggle state
@@ -642,8 +647,12 @@ function toggleBlockCount() {
 
 
         
-        let gridData = Array.from({ length: 100 }, () => Array(100).fill(null)); // 2D array for grid
 
+
+		
+        
+
+		//system to fill inventory
         const inv = document.getElementById('inv');
         const grid = document.getElementById('grid');
         const fileInput = document.getElementById('file-input');
@@ -699,7 +708,7 @@ function toggleBlockCount() {
 
         
 
-
+		let gridData = Array.from({ length: 100 }, () => Array(100).fill(null)); // 2D array for grid
         //GENERATE MAIN 100 BY 100 GRID
         function GenerateMainGrid(){
 			for (let i = 0; i < 10000; i++) {
@@ -713,6 +722,8 @@ function toggleBlockCount() {
 		}
 		
 		
+
+
 		
 		//WHEN PAGE IS FULLY LOADED
 		window.onload = function(){
@@ -724,9 +735,6 @@ function toggleBlockCount() {
 
 
 
-
-		// Array of block names that pipes shouldn't link to
- // Add the block names here that pipes should not connect to
 
 // Function to manage pipe textures based on neighbors
 function pipeTextureManager() {
@@ -809,14 +817,15 @@ function pipeTextureManager() {
                 }
 				else {
                     gridData[row][col].name = 'steam-pipe.png';
-                    changeBlockImage(row, col, 'assets/steam-pipe.png'); // No pipe, clear image
+                    changeBlockImage(row, col, 'assets/steam-pipe.png'); // No pipe, default image
                 }
             }
         }
     }
 }
 
-setInterval(pipeTextureManager,400)
+//pipe update
+setInterval(pipeTextureManager,pipe_texture_update_interval)
 
 // Function to update pipes after removing/adding
 function updatePipesAfterChange(row, col) {
@@ -902,6 +911,8 @@ function removePipe(row, col) {
 
 				let existingButton = document.getElementById(`activator-${i}`);
 				if (existingButton) {
+					multi_activator_list = multi_activator_list.filter(a => a.i != i)	
+					console.log(	multi_activator_list)
 					document.body.removeChild(existingButton);
 					existingButton.remove()
 				}
@@ -995,6 +1006,7 @@ function removePipe(row, col) {
 					
 					//activators engines/revolver/stomper
 				   if(selectedItem.name.includes("stomper")){
+					multi_activator_list.push(new Activator_Object(selectedItem.name,i,row,col));
 					button.addEventListener("click", () => {
 						console.log("activator button active")
 						console.log(selectedItem.name)	
@@ -1211,6 +1223,49 @@ function removePipe(row, col) {
 			
 			
 		} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+					let multi_activator_list = [
+
+					]
+
+					class Activator_Object {
+						constructor(name,i,row,col){
+							this.name = name;
+							this.i = i;
+							this.row = row;
+							this.col = col;
+						}
+					}
+
+
+
+					function multiActivate(){
+						for(let activator = 0;activator<multi_activator_list.length;activator++){
+							if(!document.getElementById("activator-" +  multi_activator_list[activator].i))
+								continue;
+							document.getElementById("activator-" +  multi_activator_list[activator].i).click();
+						}
+					}
+
+
+
 
 			  
 
@@ -2538,7 +2593,9 @@ if(this.distance_moved >= this.max_puff_distance){
 
 		//used for stomper
        function steamSystem_main2(act_r, act_c, provider="") {
-		//	console.log(gridData);
+		let unique_1 = unique(20);
+			
+			activator_queue[unique_1] = function(){
 			
 			let adjCells = adj(act_r, act_c); // Get adjacent cells
 			
@@ -2627,6 +2684,8 @@ if(this.distance_moved >= this.max_puff_distance){
 			// Initial propagation attempt
 			propagate();
 		}
+		activator_queue[unique_1]()
+	   }
 
 	
 	

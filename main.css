@@ -365,6 +365,30 @@
   	font-size       : 8px;
   }
 
+  #multi_activate_button {
+	position        : fixed;
+	top             : 175px;
+	/* Adjusted to be below the Save Build button */
+	right           : 25px;
+	z-index         : 20;
+	padding         : 0px;
+	margin: 0px;
+	background-color: transparent;
+	font-family     : 'Roboto Mono', monospace;
+	color           : black;
+	font-weight     : bold;
+	border          : none;
+	border-radius   : 5px;
+	cursor          : pointer;
+	font-size       : 40px;
+	transform:rotate(180deg);
+	text-shadow: 
+        2px 2px 0px lime,  /* Right bottom shadow */
+        -2px -2px 0px lime, /* Left top shadow */
+        2px -2px 0px lime,  /* Right top shadow */
+        -2px 2px 0px lime;  /* Left bottom shadow */
+}
+
   #load_example_build_button {
   	position        : fixed;
   	top             : 135px;
