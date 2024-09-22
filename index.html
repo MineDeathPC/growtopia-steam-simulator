@@ -864,7 +864,7 @@ function removePipe(row, col) {
 			if (cell.hasChildNodes()) {
 				
 				cell.innerHTML = '';
-				cell.style.border = '2px groove  rgba(0,230,230,0.4)';
+				cell.style.border = intial_grid_border_style;
 				cell.style.filter = ''; // Remove the shadow
 				gridData[row][col] = "null";
 
