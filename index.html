@@ -261,6 +261,8 @@ function resetGrid_button() {
 
 		// Reset gridData
 		gridData = Array.from({ length: 100 }, () => Array(100).fill(null)); 
+		
+		
 	})
 }
 
@@ -291,6 +293,8 @@ function resetGrid() {
 
 		// Reset gridData
 		gridData = Array.from({ length: 100 }, () => Array(100).fill(null)); 
+		mobileToggle()
+		setTimeout(mobileToggle,200)
 }
 
 
@@ -891,6 +895,7 @@ function removePipe(row, col) {
 			if (cell.hasChildNodes()) {
 				
 				cell.innerHTML = '';
+				if(!grid_view_toggle)
 				cell.style.border = intial_grid_border_style;
 				cell.style.filter = ''; // Remove the shadow
 				gridData[row][col] = "null";
