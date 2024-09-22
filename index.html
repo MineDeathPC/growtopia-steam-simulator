@@ -341,6 +341,34 @@ function resetGrid() {
 
 
 
+		let isScrolling = false; // Flag to track if the user is holding the click
+let scrollSpeed = 1; // Speed of scrolling
+
+// Start scrolling when the mouse button is held down
+document.addEventListener('mousedown', function(e) {
+    isScrolling = true; // Enable scrolling
+});
+
+// Stop scrolling when the mouse button is released
+document.addEventListener('mouseup', function(e) {
+    isScrolling = false; // Disable scrolling
+});
+
+// Scroll the page while the mouse moves and the click is held
+document.addEventListener('mousemove', function(e) {
+    if (isScrolling) {
+        // Get the mouse movement direction
+        let x = -1*e.movementX;
+        let y = -1*e.movementY;
+
+        // Scroll the page in the direction of the mouse movement
+        window.scrollBy(x * scrollSpeed, y * scrollSpeed);
+    }
+});
+
+
+
+
 		
 		
 		
@@ -698,7 +726,6 @@ function toggleBlockCount() {
 
 // Function to manage pipe textures based on neighbors
 function pipeTextureManager() {
-    console.log("called")
     // Loop through every row and column in the 2D grid
     if (gridData.flat().length == 0) {
         return;
@@ -785,7 +812,7 @@ function pipeTextureManager() {
     }
 }
 
-setInterval(pipeTextureManager,500)
+setInterval(pipeTextureManager,400)
 
 // Function to update pipes after removing/adding
 function updatePipesAfterChange(row, col) {
@@ -849,7 +876,7 @@ function removePipe(row, col) {
 		//main function to handle placing blocks on the grid
 //main function to handle placing blocks on the grid
 		function placeBlock(cell, i, control="build", saved_value=[]) {
-
+			
 		
 			
 	
@@ -1049,6 +1076,8 @@ function removePipe(row, col) {
 								}
 							
 						});
+
+						
 				}
 
 					

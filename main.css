@@ -48,22 +48,24 @@
 
 
 
-  
+
 
   * {
-  	scrollbar-width: thin;
-  	scrollbar-color: rgba(8, 59, 200, 0.7) cyan;
+  	scrollbar-width: none;
+  	scrollbar-color: rgba(8, 59, 200, 0) rgba(8, 59, 200, 0);
   	/* thumb color and track color */
   }
 
   /* The scrollbar track (background) */
   ::-webkit-scrollbar-track {
-  	background-color: rgba(8, 200, 159, 0.7);
+	display:none;
+  	background-color:rgba(8, 59, 200, 0);
   }
 
   /* The draggable part of the scrollbar */
   ::-webkit-scrollbar-thumb {
-  	background-color: cyan;
+	display:none;
+  	background-color:rgba(8, 59, 200, 0);
   	border-radius   : 10px;
   	border          : 3px solid cyan;
   	/* Add padding around the thumb */
@@ -126,28 +128,42 @@
   }
 
   #grid {
-  	display              : grid;
-  	grid-template-columns: repeat(100, 40px);
+  	display                    : grid;
+  	grid-template-columns      : repeat(100, 40px);
   	/* 100 columns with each cell 40px wide */
-  	grid-template-rows   : repeat(100, 40px);
+  	grid-template-rows         : repeat(100, 40px);
   	/* 100 rows with each cell 40px tall */
-  	gap                  : 0px;
-  	position             : absolute;
-  	top                  : 0;
-  	left                 : 0;
-  	z-index              : 0;
+  	gap                        : 0px;
+  	position                   : absolute;
+  	top                        : 0;
+  	left                       : 0;
+  	z-index                    : 0;
+  	-webkit-tap-highlight-color: transparent;
+  	-webkit-touch-callout      : none;
+  	-webkit-user-select        : none;
+  	-khtml-user-select         : none;
+  	-moz-user-select           : none;
+  	-ms-user-select            : none;
+  	user-select                : none;
   }
 
   .grid-cell {
-  	width          : 40px;
-  	height         : 40px;
-  	object-position: center;
-  	border         : 1px solid rgba(0, 230, 230, 0.7);
-  	position       : relative;
+  	width                      : 40px;
+  	height                     : 40px;
+  	object-position            : center;
+  	border                     : 1px solid rgba(0, 230, 230, 0.7);
+  	position                   : relative;
   	/* For positioning steam puffs */
-  	overflow       : hidden;
-  	margin         : 0px;
-  	padding        : 0px;
+  	overflow                   : hidden;
+  	margin                     : 0px;
+  	padding                    : 0px;
+  	-webkit-tap-highlight-color: transparent;
+  	-webkit-touch-callout      : none;
+  	-webkit-user-select        : none;
+  	-khtml-user-select         : none;
+  	-moz-user-select           : none;
+  	-ms-user-select            : none;
+  	user-select                : none;
   }
 
   .grid-cell img {
@@ -155,8 +171,15 @@
   	height         : 100%;
   	object-position: center;
 
-  	margin : 0px;
-  	padding: 0px;
+  	margin                     : 0px;
+  	padding                    : 0px;
+  	-webkit-tap-highlight-color: transparent;
+  	-webkit-touch-callout      : none;
+  	-webkit-user-select        : none;
+  	-khtml-user-select         : none;
+  	-moz-user-select           : none;
+  	-ms-user-select            : none;
+  	user-select                : none;
   }
 
 
