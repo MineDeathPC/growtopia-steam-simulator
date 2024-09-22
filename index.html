@@ -387,7 +387,11 @@ function toggleBlockCount() {
             'pipe-corner-DL',
             'pipe-corner-DR',
             'pipe-corner-UL',
-            'pipe-corner-UR'
+            'pipe-corner-UR',
+			'pipe-isolated-U',
+			'pipe-isolated-D',
+			'pipe-isolated-L',
+			'pipe-isolated-R'
         ];
 
         // Count the pipes
@@ -623,7 +627,14 @@ function toggleBlockCount() {
             div.classList.add('inv-item');
             
             const img = document.createElement('img');
-            img.src = "assets/" + item.name.toLowerCase().replaceAll(" ", "-") + ".png";
+
+			if(!item.name.includes('pipe')){
+          	  img.src = "assets/" + item.name.toLowerCase().replaceAll(" ", "-") + ".png";
+			}
+			else{
+				img.src = "assets/" + "steam-pipe-true-icon.png"
+
+			}
             img.alt = item.name;
 			img.title = item.name.replace("ULDR","").replace("URDL","");
 			if(item.name.includes("pipe")){
