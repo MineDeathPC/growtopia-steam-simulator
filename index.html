@@ -245,6 +245,8 @@ function loadFile(event) {
         }
     };
     reader.readAsText(file);
+	mobileToggle()
+	setTimeout(mobileToggle,1000)
 	
 	console.log('build loaded!')
 }
@@ -378,15 +380,16 @@ function resetGrid() {
 
 		function showGridBorder() {
 			Array.from(document.getElementsByClassName("grid-cell")).forEach((e)=>{
-				e.style.border = "1px solid rgba(0,0,0,0)"
+				e.style.borderColor = "rgba(0,0,0,0)"
 				document.getElementById('show_grid_button').innerHTML = "Show Grid (G)"
 				document.getElementById('show_grid_button').style.backgroundColor = "indigo"
 			})
 		}
 
 		function hideGridBorder() {
+			//alert(initial_grid_border_style.split(" ")[3])
 		Array.from(document.getElementsByClassName("grid-cell")).forEach((e)=>{
-			 e.style.border = initial_grid_border_style;
+			 e.style.borderColor =  "rgba(0, 230, 230, 0.7)";
 			 document.getElementById('show_grid_button').innerHTML = "Hide Grid (G)"
 			 document.getElementById('show_grid_button').style.backgroundColor = "violet"
 			 })
