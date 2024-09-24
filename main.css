@@ -229,7 +229,7 @@
   	font-family     : 'Roboto Mono', monospace;
   	padding         : 5px 10px;
   	border-radius   : 5px;
-  	font-size       : 10px;
+  	font-size       : 0.6rem;
   }
 
   #puff-counter {
@@ -243,7 +243,7 @@
   	font-family     : 'Roboto Mono', monospace;
   	padding         : 5px 10px;
   	border-radius   : 5px;
-  	font-size       : 8px;
+  	font-size       : 0.5rem;
   }
 
   #block-counter-button {
@@ -257,7 +257,7 @@
   	font-family     : 'Roboto Mono', monospace;
   	padding         : 5px 10px;
   	border-radius   : 5px;
-  	font-size       : 8px;
+  	font-size       : 0.5rem;
   }
 
   #block-count-display {
@@ -326,7 +326,7 @@
   	position   : fixed;
   	bottom     : 10px;
   	right      : 10px;
-  	font-size  : 9px;
+  	font-size  : 0.42rem;
   	color      : white;
   	font-family: 'Roboto Mono', monospace;
   	font-style : italic;
@@ -380,13 +380,75 @@
 	border          : none;
 	border-radius   : 5px;
 	cursor          : pointer;
-	font-size       : 40px;
+	font-size       : 35px;
 	transform:rotate(180deg);
 	text-shadow: 
         2px 2px 0px lime,  /* Right bottom shadow */
         -2px -2px 0px lime, /* Left top shadow */
         2px -2px 0px lime,  /* Right top shadow */
         -2px 2px 0px lime;  /* Left bottom shadow */
+}
+
+#confirm_multi_activate_button {
+	position        : fixed;
+	top             : 225px;
+	/* Adjusted to be below the Save Build button */
+	right           : 22px;
+	z-index         : 20;
+	padding         : 5px 5px;
+	margin: 0px;
+	background-color: rgb(0, 51, 128);
+	color:lime;
+	font-weight:bold;
+	font-family     : 'Roboto Mono', monospace;
+	border          : none;
+	cursor          : pointer;
+	font-size       : 9px;
+	display:none;
+}
+
+
+
+
+
+#loading-cont{
+	position:fixed;
+
+	width:100%;
+	height:100%;
+	background-color:rgb(1, 4, 10);
+	margin:0;
+	left:0px;
+	top:0px;
+	z-index:20;
+	display:none;
+	transform:translate(0%,0%);
+}
+
+#loading-video{
+	width:200px;
+	height:200px;
+	position:relative;
+	left:50%;
+	top:0%;
+	transform:translateX(-50%);
+	z-index:21;
+	mix-blend-mode: screen;
+}
+
+#loading-text{
+	position:relative;
+	color:white;
+	width:6cm;
+	padding:0;
+	left:50%;
+	top:5%;
+	transform:translate(-50%,5%);
+	font-family     : 'Roboto Mono', monospace;
+	font-weight:bold;
+	font-size:3.8rem;
+	margin:0;
+	z-index:22;
 }
 
   #load_example_build_button {

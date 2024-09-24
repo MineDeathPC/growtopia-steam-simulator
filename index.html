@@ -28,6 +28,9 @@
     </div>
 	
 	  <div class="content">
+
+	
+		</div>
     <div id="inv-cont">
         <div id="inv"></div>
     </div>
@@ -52,12 +55,19 @@
 	 <button id="load_build_button" onclick="loadBuild()">Load Build</button>
 	 <button id="reset_grid_button" onclick="resetGrid_button()">Reset Grid</button>
 	 <button id='multi_activate_button' onclick = 'multiActivate()'>◀️</button>
+	 <button id='confirm_multi_activate_button' onclick = 'confirmMultiActivate()'>ACTIVATE</button>
 	 <button id="load_example_build_button" style="display:none;">Load Examples</button>
     <div id="example-builds-container" style="display:none; position:fixed; width:50%; height:50%; z-index:15; top:50%; left:50%; transform:translate(-50%, -50%); padding:20px; background:white; border:1px solid 	#ccc; box-shadow:0px 0px 10px rgba(0, 0, 0, 0.1);"></div>
 	
 	
 <div class="fixed-text">Created By: <i style="color:rgb(255, 195, 30);"><b>MineDeath </b></i></div>
-	
+
+	<div id="loading-cont">
+		<div id="loading-text">LOADING</div>
+			<video id="loading-video" autoplay loop muted>
+				
+				<source src="assets/gear-vid.mp4" type="video/mp4">
+			  </video>
 <!-- end of all content-->
 </div>
 <input type="file" id="file-input" style="display:none;" onchange="loadFile(event)"/>
@@ -88,13 +98,27 @@
 
 
 
-		
+		function showLoad(seconds) {
+			const loadingCont = document.getElementById("loading-cont");
+			const loadingVideo = document.getElementById("loading-video");
+
+			// Display the video
+			loadingCont.style.display = "block";
+
+			// Reset the video
+			loadingVideo.pause();
+			loadingVideo.currentTime = 0;
+			loadingVideo.play();
+
+			setTimeout(() => {
+				loadingCont.style.display = "none";
+			}, seconds * 1000);		
+		}
+
 
 
 
 //loading and saving system
-function saveBuild2(){swal("404","not implemented yet, sorry!","error")}
-function loadBuild2(){swal("404","not implemented yet, sorry!","error")}
 
 
 //min,max are inclusive
@@ -144,8 +168,11 @@ function getBlockState(block) {
 // Save build function
 // Save build function
 function saveBuild() {
-    swal("BETA", "Saving and loading builds is still in beta development, expect bugs!", "warning");
-    
+	if(multi_activator_toggle){
+		swal("Multi Selection mode enabled!", "Can't use this feature while in this mode, sorry!", "error")
+		return
+	}
+ 
     const simplifiedGridData = gridData.map(row => 
         row.map(block => {
             if (block&&block!='null') {
@@ -172,12 +199,17 @@ function saveBuild() {
 // Load build function
 // Load build function
 function loadBuild() {
-    swal("BETA", "Saving and loading builds is still in beta development, expect bugs!", "warning");
+	if(multi_activator_toggle){
+		swal("Multi Selection mode enabled!", "Can't use this feature while in this mode, sorry!", "error")
+		return
+	}
+
     document.getElementById('file-input').click(); // Trigger file input
 }
 
 // Load build function
 function loadFile(event) {
+	showLoad(4)
     const file = event.target.files[0];
     if (!file) return;
 
@@ -213,6 +245,7 @@ function loadFile(event) {
         }
     };
     reader.readAsText(file);
+	
 	console.log('build loaded!')
 }
 
@@ -236,6 +269,10 @@ setTimeout(()=>{
 
 // Function to reset the grid visually and in gridData
 function resetGrid_button() {
+	if(multi_activator_toggle){
+		swal("Multi Selection mode enabled!", "Can't use this feature while in this mode, sorry!", "error")
+		return
+	}
 	swal({
 		title: "Are you sure?",
 		text: "The grid will be cleared!",
@@ -269,7 +306,7 @@ function resetGrid_button() {
 
 		// Reset gridData
 		gridData = Array.from({ length: 100 }, () => Array(100).fill(null)); 
-		
+		multi_activator_list = []
 		
 	})
 }
@@ -277,6 +314,11 @@ function resetGrid_button() {
 
 //same as above but without warning
 function resetGrid() {
+	if(multi_activator_toggle){
+		swal("Multi Selection mode enabled!", "Can't use this feature while in this mode, sorry!", "error")
+		return
+	}
+
 		for (let i = 0; i < 10000; i++) {
 			const cell = document.getElementById(`grid-cell-${i}`);
 			if (cell) {
@@ -301,8 +343,8 @@ function resetGrid() {
 
 		// Reset gridData
 		gridData = Array.from({ length: 100 }, () => Array(100).fill(null)); 
-		mobileToggle()
-		setTimeout(mobileToggle,200)
+		multi_activator_list = []
+		
 }
 
 
@@ -402,58 +444,75 @@ function resetGrid() {
 	
 
 //toggle block count system
-showingBlockCount = false;
+let showingBlockCount = false;
+
+function countAndDisplay(group, groupName, filteredData, count_display) {
+    let count = group.reduce((total, itemName) => {
+        return total + filteredData.filter(a => a.name === itemName).length;
+    }, 0);
+
+    if (count > 0) {
+        count_display.innerHTML += `<b>${groupName}: ${count}</b><br />`;
+        return true;
+    }
+    return false;
+}
+
 function toggleBlockCount() {
     let count_display = document.getElementById("block-count-display");
-    
+
     if (!showingBlockCount) {
         let filteredData = gridData.flat().filter(a => a && a.hasOwnProperty("name"));
-        let steamPipeCount = 0; // To hold the total count of steam pipes
         let min_1 = false;
 
-        // List of pipe names
-        const pipeNames = [
-            'steam pipe',
-            'pipe-vertical',
-            'pipe-horizontal',
-            'pipe-4-junction',
-            'pipe-3-junction-L',
-            'pipe-3-junction-R',
-            'pipe-3-junction-U',
-            'pipe-3-junction-D',
-            'pipe-corner-DL',
-            'pipe-corner-DR',
-            'pipe-corner-UL',
-            'pipe-corner-UR',
-			'pipe-isolated-U',
-			'pipe-isolated-D',
-			'pipe-isolated-L',
-			'pipe-isolated-R'
-        ];
+        const groups = {
+            'steam pipe': [
+                'steam-pipe',
+                'pipe-vertical',
+                'pipe-horizontal',
+                'pipe-4-junction',
+                'pipe-3-junction-L',
+                'pipe-3-junction-R',
+                'pipe-3-junction-U',
+                'pipe-3-junction-D',
+                'pipe-corner-DL',
+                'pipe-corner-DR',
+                'pipe-corner-UL',
+                'pipe-corner-UR',
+                'pipe-isolated-U',
+                'pipe-isolated-D',
+                'pipe-isolated-L',
+                'pipe-isolated-R'
+            ],
+            'steam crossover': ['steam crossover ULDR', 'steam crossover URDL'],
+            'steam vent': ['steam vent L', 'steam vent R'],
+            'steam valve': ['steam valve left', 'steam valve right'],
+            'steam engine': ['steam engine L', 'steam engine R'],
+            'steam funnel': ['steam funnel left', 'steam funnel right']
+        };
 
-        // Count the pipes
-        pipeNames.forEach(itemName => {
-            const count = filteredData.filter(a => a.name === itemName).length;
-            steamPipeCount += count; // Aggregate count for steam pipes
-        });
-
-        // Display the aggregated count for steam pipes
-        if (steamPipeCount > 0) {
-            count_display.innerHTML += "<b>steam pipes: " + steamPipeCount + "</b><br />";
-            min_1 = true; // Set min_1 to true if there are steam pipes
+        // Iterate over each group and display the counts
+        for (let groupName in groups) {
+            if (countAndDisplay(groups[groupName], groupName, filteredData, count_display)) {
+                min_1 = true;
+            }
         }
 
-        // Count and display other items
+        // Count and display other items (non-pipe, non-steam)
         items.forEach(item => {
-            const count = filteredData.filter(a => a.name === item.name).length;
-            if (count > 0) {
-				if(!item.name.includes('pipe')){
-                count_display.innerHTML += "<b>" + item.name + ": " + count + "</b><br />";
-                min_1 = true; // Set min_1 to true if any item is counted
-				}
+            if (!item.name.includes('pipe') && !item.name.includes('crossover') &&
+                !item.name.includes('vent') && !item.name.includes('valve') && 
+                !item.name.includes("engine")) {
+
+                let count = filteredData.filter(a => a.name === item.name).length;
+                if (count > 0) {
+                    count_display.innerHTML += `<b>${item.name}: ${count}</b><br />`;
+                    min_1 = true;
+                }
             }
         });
 
+        // If no blocks were counted, display a message
         if (!min_1) {
             count_display.innerHTML += "no blocks to count";
         }
@@ -556,7 +615,7 @@ function toggleBlockCount() {
            
 			{ name: "copper" },
 
-			{ name: 'steam pipe', hide: null },
+			{ name: 'steam-pipe', hide: null },
 			{ name: 'pipe-vertical', hide: null },
 			{ name: 'pipe-horizontal', hide: null },
 			{ name: 'pipe-4-junction', hide: null },
@@ -602,7 +661,7 @@ function toggleBlockCount() {
 			"steam door",
 			"steam spikes",
 
-			'steam pipe',
+			'steam-pipe',
 			'pipe-vertical',
 			'pipe-horizontal',
 			'pipe-4-junction',
@@ -635,7 +694,8 @@ function toggleBlockCount() {
 			"steam revolver",
 			"steam stomper" ,
 			"steam engine L" ,
-			"steam engine R"
+			"steam engine R",
+			"copper"
 		];
 		
 		const single_powered = [    
@@ -716,7 +776,7 @@ function toggleBlockCount() {
 				cell.id = `grid-cell-${i}`
 				cell.classList.add('grid-cell');
 
-				cell.addEventListener('click', () => placeBlock(cell, i));
+				cell.addEventListener('click', (main_event) => placeBlock(cell, i, main_event));
 				grid.appendChild(cell);
 			}
 		}
@@ -724,13 +784,59 @@ function toggleBlockCount() {
 		
 
 
-		
+		showLoad(4)
+
 		//WHEN PAGE IS FULLY LOADED
 		window.onload = function(){
+
 			setTimeout(toggleInventory, 1000);
 			setTimeout(toggleInventory, 1000);
 			GenerateMainGrid()
+			
+			let prev_data = localStorage.getItem('grid-data');
+			if(prev_data)
+			setTimeout(()=>{loadFromJSONString(prev_data)},500)
+			setInterval(SaveGridDataLocal,5000)
 		}
+
+
+		function SaveGridDataLocal(){
+				localStorage.setItem('grid-data',JSON.stringify(gridData))
+			}
+
+			
+
+		
+		function loadFromJSONString(jsonString) {
+			try {
+				const loadedGridData = JSON.parse(jsonString);
+				resetGrid(); 
+		
+				loadedGridData.forEach((row, rowIndex) => {
+					row.forEach((blockData, colIndex) => {
+						if (blockData == "null") {
+							blockData = null; 
+						}
+						if (blockData != null && blockData != "null") {
+							selectedItem = { name: blockData.name, orientation: 0 };
+
+						
+							if (blockData.state) {
+								restoreBlockState(blockData, blockData.state, rowIndex, colIndex); 
+							}
+
+							placeBlock(document.getElementById(`grid-cell-${rowIndex * 100 + colIndex}`), rowIndex * 100 + colIndex);
+						}
+					});
+				});
+				console.log('Build loaded from JSON string!');
+			} catch (err) {
+				alert("Failed to load build. Invalid JSON format.");
+				console.error("Error loading JSON string:", err);
+			}
+	}
+
+
 
 
 
@@ -816,7 +922,7 @@ function pipeTextureManager() {
                     changeBlockImage(row, col, 'assets/pipe-isolated-D.png'); // Elbow (Down-Left)
                 }
 				else {
-                    gridData[row][col].name = 'steam-pipe.png';
+                    gridData[row][col].name = 'steam-pipe';
                     changeBlockImage(row, col, 'assets/steam-pipe.png'); // No pipe, default image
                 }
             }
@@ -888,7 +994,15 @@ function removePipe(row, col) {
 
 		//main function to handle placing blocks on the grid
 //main function to handle placing blocks on the grid
-		function placeBlock(cell, i, control="build", saved_value=[]) {
+		function placeBlock(cell, i, control="build", saved_value=[], main_event = null) {
+			
+			
+
+			if(multi_activator_toggle){
+				console.log("SRY")
+				return
+			}
+			
 			
 		
 			
@@ -1006,8 +1120,10 @@ function removePipe(row, col) {
 					
 					//activators engines/revolver/stomper
 				   if(selectedItem.name.includes("stomper")){
-					multi_activator_list.push(new Activator_Object(selectedItem.name,i,row,col));
-					button.addEventListener("click", () => {
+					//multi_activator_list.push(new Activator_Object(selectedItem.name,i,row,col));
+					button.addEventListener("click", (event) => {
+						if(multi_activator_toggle && event.isTrusted)
+							return
 						console.log("activator button active")
 						console.log(selectedItem.name)	
 						let unique_1 = unique(15);
@@ -1017,7 +1133,9 @@ function removePipe(row, col) {
 					}
 					
 					if(selectedItem.name.includes("revolver")){
-					button.addEventListener("click", () => {
+					button.addEventListener("click", (event) => {
+						if(multi_activator_toggle && event.isTrusted)
+							return
 						console.log("activator button active")
 						console.log(selectedItem.name)	
 						let unique_1 = unique(15);
@@ -1032,7 +1150,9 @@ function removePipe(row, col) {
 						gridData[row][col] = new steam_engine(selectedItem.name,false,null)
 						console.log("Engine detected");
 
-						button.addEventListener("click", () => {
+						button.addEventListener("click", (event) => {
+							if(multi_activator_toggle && event.isTrusted)
+							return
 							console.log("Activator button active");
 							console.log(selectedItem.name);
 							
@@ -1066,7 +1186,9 @@ function removePipe(row, col) {
 						gridData[row][col] = new steam_engine(selectedItem.name,false,null)
 						console.log("Engine detected");
 
-						button.addEventListener("click", () => {
+						button.addEventListener("click", (event) => {
+							if(multi_activator_toggle && event.isTrusted)
+							return
 							console.log("Activator button active");
 							console.log(selectedItem.name);
 							
@@ -1122,6 +1244,8 @@ function removePipe(row, col) {
 					button.style.left = `${(i % 100) * 41}px`;
 
 					button.addEventListener("click", () => {
+						if(multi_activator_toggle)
+							return
 						crank.toggleFlow();
 						changeBlockImage(row, col, crank.getImage()) 
 						console.log("steam crank rotated");
@@ -1154,6 +1278,8 @@ function removePipe(row, col) {
 
 					// Add event listener to toggle the state
 					button.addEventListener("click", () => {
+						if(multi_activator_toggle)
+							return
 						let currentDoor = gridData[row][col]; // Get the existing door from the grid
 						currentDoor.toggleState(); // Toggle the door's state
 						changeBlockImage(row, col, currentDoor.getImage());  // Update the image
@@ -1178,6 +1304,8 @@ function removePipe(row, col) {
 
 					// Add event listener to toggle the state
 					button.addEventListener("click", () => {
+						if(multi_activator_toggle)
+							return
 						let currentLauncher = gridData[row][col]; // Get the existing launcher from the grid
 						currentLauncher.deactivate() // Toggle the launcher's state
 						currentLauncher.updateImg(row,col)
@@ -1233,21 +1361,15 @@ function removePipe(row, col) {
 
 
 
+					let multi_activator_toggle = false;
 
-
-
-
-
-
-
-
+					
 					let multi_activator_list = [
 
 					]
 
 					class Activator_Object {
-						constructor(name,i,row,col){
-							this.name = name;
+						constructor(i,row,col){
 							this.i = i;
 							this.row = row;
 							this.col = col;
@@ -1255,15 +1377,98 @@ function removePipe(row, col) {
 					}
 
 
+			let valid_activators = [
+							"steam revolver",
+							"steam stomper"
+						]
 
-					function multiActivate(){
-						for(let activator = 0;activator<multi_activator_list.length;activator++){
-							if(!document.getElementById("activator-" +  multi_activator_list[activator].i))
-								continue;
-							document.getElementById("activator-" +  multi_activator_list[activator].i).click();
-						}
-					}
 
+			function multiActivate() {
+				multi_activator_list = []
+					if(!multi_activator_toggle){
+						document.getElementById('multi_activate_button').innerHTML = '❎'
+						document.getElementById('confirm_multi_activate_button').style.display = "block"
+						/*
+						const row = Math.floor(i / 100);
+						const col = i % 100;
+						*/
+					Array.from(document.getElementsByClassName("activators")).forEach((activator) => {
+						
+						
+
+						let i_ = activator.id.replace('activator-', '');
+
+						if(!valid_activators.includes(gridData[Math.floor(i_ / 100)][ i_ % 100].name))
+							return;
+
+						activator.value = activator.innerHTML 
+						activator.innerHTML = `
+							<label for="check-${activator.id}"></label>
+							<input type="checkbox" id="check-${activator.id}" class="multi-activate-selection" name="activator" />
+						`;
+
+						document.getElementById(`check-${activator.id}`).addEventListener('change', function () {
+							let i = activator.id.replace('activator-', '');
+
+							if (document.getElementById(`check-${activator.id}`).checked) {
+								console.log('checked')
+								// Push a new Activator_Object to multi_activator_list
+								multi_activator_list.push(new Activator_Object( parseInt(i), Math.floor(i / 100), i % 100));
+							} else {
+								// Optionally remove it if unchecked
+								multi_activator_list = multi_activator_list.filter(a => a.i !== parseInt(i));
+							}
+						});
+					});
+					multi_activator_toggle = true;
+				}
+
+				else{
+					document.getElementById('multi_activate_button').innerHTML = '◀️'	
+					document.getElementById('confirm_multi_activate_button').style.display = "none"
+
+					Array.from(document.getElementsByClassName("activators")).forEach((activator) => {
+						let i_ = activator.id.replace('activator-', '');
+						if(!valid_activators.includes(gridData[Math.floor(i_ / 100)][ i_ % 100].name))
+							return;
+							activator.innerHTML = activator.value;
+					})
+					
+					multi_activator_toggle = false;
+				}
+			}
+
+
+					
+
+
+			function confirmMultiActivate(){
+				console.log('attempted', multi_activator_list);
+				const activators = multi_activator_list
+				if(activators.length == 0){
+					swal("NO ACTIVATORS SELECTED!", "This mode allows you to select and activate multiple activators at once, exlcuding engines. You've currently not selected any activators.", "error");
+					return;
+				}
+
+				activators.map(item => document.getElementById("activator-" + item.i))
+					.filter(el => el !== null);  // Filter out any null elements
+
+				activators.forEach(el => {
+				console.log(Object.keys(el))
+				document.getElementById("activator-" + el.i).click()
+			})
+				;
+			}
+
+
+
+
+
+
+
+
+
+			
 
 
 
@@ -2594,97 +2799,79 @@ if(this.distance_moved >= this.max_puff_distance){
 		//used for stomper
        function steamSystem_main2(act_r, act_c, provider="") {
 		let unique_1 = unique(20);
-			
-			activator_queue[unique_1] = function(){
-			
-			let adjCells = adj(act_r, act_c); // Get adjacent cells
-			
-			//additional check for spike/lamp below
-			if(adjCells[1]){
-				if(adjCells[1].hasOwnProperty('name')&&adjCells[1].name.includes('spike')){
-					adjCells[1] = null
-				}
-				if(adjCells[1].hasOwnProperty('name')&&adjCells[1].name.includes('lamp')){
-					adjCells[1] = null
-				}
-				if(adjCells[1].hasOwnProperty('name')&&adjCells[1].name.includes('launcher')){
-					adjCells[1] = null
-				}
-			}
-						
-			//more sus crank checks
-			if(adjCells[1]){
-				if(adjCells[1].hasOwnProperty('name')&&adjCells[1].name.includes('crank')){
-				if(adjCells[1].flow=="horizontal")
-					adjCells[1] = null
-				}
-			}
-			if(adjCells[0]){
-				if(adjCells[0].hasOwnProperty('name')&&adjCells[0].name.includes('crank')){
-				if(adjCells[0].flow=="horizontal")
-					adjCells[0] = null
-				}
-			}
 
+    activator_queue[unique_1] = function() {
+        const adjCells = adj(act_r, act_c);
 
-			// Function to check if a cell is valid
-			function isValidCell(cell) {
-				return cell !== null && cell !== undefined && cell.hasOwnProperty('name');
-			}
+        // Additional checks for spike/lamp/launcher and crank behavior
+        const checkAndNullify = (cell, direction) => {
+            if (cell && cell.hasOwnProperty('name')) {
+                if (
+                    cell.name.includes('spike') || cell.name.includes('lamp') || 
+                    cell.name.includes('launcher')) {
+                    return null;
+                }
 
-			// Function to check if propagation should occur
-			function shouldPropagate(cell) {
-				return standard_behaviour.includes(cell.name) || cell.name.includes("funnel");
-			}
+				if((direction === 2 && cell.name.includes('valve') )|| (direction === 3 && cell.name.includes('valve') ))
+					return null;
+					if((direction === 2 && cell.name.includes('vent') )|| (direction === 3 && cell.name.includes('vent') ))
+					return null;
+                // Crank logic: allow vertical cranks below (1) and horizontal cranks left (2) or right (3)
+                if (cell.name.includes('crank')) {
+                    if (
+                        (direction === 1 && cell.flow === "vertical") || 
+                        (direction === 2 && cell.flow === "horizontal") ||
+                        (direction === 3 && cell.flow === "horizontal")
+                    ) {
+                        return cell;
+                    } else {
+                        return null;
+                    }
+                }
+            }
+            return cell;
+        };
 
-			// Function to handle puff propagation
-			function handlePuff(direction, newRow, newCol) {
-				let _puff = new Puff(direction, { row: newRow, col: newCol });
-			}
+        adjCells[0] = checkAndNullify(adjCells[0], 0); // Up
+        adjCells[1] = checkAndNullify(adjCells[1], 1); // Down
+        adjCells[2] = checkAndNullify(adjCells[2], 2); // Left
+        adjCells[3] = checkAndNullify(adjCells[3], 3); // Right
 
-			// Check and handle "sus crank" for a specific cell
-			function checkSusCrank(row, col, directionIndex) {
-				const cell = gridData[row][col];
-				if (cell.name.includes("crank") && cell.flow === "horizontal") {
-					console.log("Caught sus crank, treating as null");
-					adjCells[directionIndex] = null; // Treat this cell as null
-					return true; // Crank detected
-				}
-				return false; // No crank detected
-			}
+        // Log adjacent cells for debugging
+        adjCells.forEach((cell, index) => {
+            if (cell) {
+                console.log(`Adjacent ${index}: ${cell ? cell.name : "null"}`);
+            }
+        });
 
-			// Main propagation logic
-			function propagate() {
-			console.log(provider)
-				if (isValidCell(adjCells[0]) && shouldPropagate(adjCells[0])&&!provider=="steam stomper") {
-				console.log(provider)
-					// Check for sus crank and treat as null if found
-					if (checkSusCrank(act_r - 1, act_c, 0)) {
-						propagate(); // Retry after marking crank as null
-						return;
-					}
-					// Move up
-					handlePuff("U", act_r - 1, act_c);
-				} 
-				else if (isValidCell(adjCells[1]) && shouldPropagate(adjCells[1])) {
-					// Check for sus crank and treat as null if found
-					if (checkSusCrank(act_r + 1, act_c, 1)) {
-						propagate(); // Retry after marking crank as null
-						return;
-					}
-					// Move down
-					handlePuff("D", act_r + 1, act_c);
-				} 
-				else {
-					// No valid direction to propagate to
-					console.log("No valid direction for puff propagation");
-				}
-			}
+        // Puff spawning with priority: Down (1), Left (2), Right (3), Never Up (0)
+        if (
+            adjCells[1] !== null && adjCells[1].hasOwnProperty('name') &&
+            (standard_behaviour.includes(adjCells[1].name) || adjCells[1].name.includes("funnel"))
+        ) {
+            // Spawn puff down
+            let _puff = new Puff("D", { row: act_r + 1, col: act_c });
+        } 
+        else if (
+            adjCells[2] !== null && adjCells[2].hasOwnProperty('name') &&
+            (standard_behaviour.includes(adjCells[2].name) || adjCells[2].name.includes("funnel"))
+        ) {
+            // Spawn puff left
+            let _puff = new Puff("L", { row: act_r, col: act_c - 1 });
+        } 
+        else if (
+            adjCells[3] !== null && adjCells[3].hasOwnProperty('name') &&
+            (standard_behaviour.includes(adjCells[3].name) || adjCells[3].name.includes("funnel"))
+        ) {
+            // Spawn puff right
+            let _puff = new Puff("R", { row: act_r, col: act_c + 1 });
+        } 
+        else {
+            // Nowhere to propagate to
+        }
+    }
 
-			// Initial propagation attempt
-			propagate();
-		}
-		activator_queue[unique_1]()
+    activator_queue[unique_1]();
 	   }
 
 	
