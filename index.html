@@ -119,8 +119,6 @@
 
 
 //loading and saving system
-function saveBuild2(){swal("404","not implemented yet, sorry!","error")}
-function loadBuild2(){swal("404","not implemented yet, sorry!","error")}
 
 
 //min,max are inclusive
@@ -174,8 +172,7 @@ function saveBuild() {
 		swal("Multi Selection mode enabled!", "Can't use this feature while in this mode, sorry!", "error")
 		return
 	}
-    swal("BETA", "Saving and loading builds is still in beta development, expect bugs!", "warning");
-    
+ 
     const simplifiedGridData = gridData.map(row => 
         row.map(block => {
             if (block&&block!='null') {
@@ -206,12 +203,13 @@ function loadBuild() {
 		swal("Multi Selection mode enabled!", "Can't use this feature while in this mode, sorry!", "error")
 		return
 	}
-    swal("BETA", "Saving and loading builds is still in beta development, expect bugs!", "warning");
+
     document.getElementById('file-input').click(); // Trigger file input
 }
 
 // Load build function
 function loadFile(event) {
+	showLoad(4)
     const file = event.target.files[0];
     if (!file) return;
 
@@ -247,6 +245,7 @@ function loadFile(event) {
         }
     };
     reader.readAsText(file);
+	
 	console.log('build loaded!')
 }
 
@@ -345,8 +344,7 @@ function resetGrid() {
 		// Reset gridData
 		gridData = Array.from({ length: 100 }, () => Array(100).fill(null)); 
 		multi_activator_list = []
-		mobileToggle()
-		setTimeout(mobileToggle,200)
+		
 }
 
 
@@ -446,62 +444,75 @@ function resetGrid() {
 	
 
 //toggle block count system
-showingBlockCount = false;
+let showingBlockCount = false;
+
+function countAndDisplay(group, groupName, filteredData, count_display) {
+    let count = group.reduce((total, itemName) => {
+        return total + filteredData.filter(a => a.name === itemName).length;
+    }, 0);
+
+    if (count > 0) {
+        count_display.innerHTML += `<b>${groupName}: ${count}</b><br />`;
+        return true;
+    }
+    return false;
+}
+
 function toggleBlockCount() {
     let count_display = document.getElementById("block-count-display");
-    
+
     if (!showingBlockCount) {
         let filteredData = gridData.flat().filter(a => a && a.hasOwnProperty("name"));
-        let steamPipeCount = 0; // To hold the total count of steam pipes
         let min_1 = false;
 
-        // List of pipe names
-        const pipeNames = [
-            'steam-pipe',
-            'pipe-vertical',
-            'pipe-horizontal',
-            'pipe-4-junction',
-            'pipe-3-junction-L',
-            'pipe-3-junction-R',
-            'pipe-3-junction-U',
-            'pipe-3-junction-D',
-            'pipe-corner-DL',
-            'pipe-corner-DR',
-            'pipe-corner-UL',
-            'pipe-corner-UR',
-			'pipe-isolated-U',
-			'pipe-isolated-D',
-			'pipe-isolated-L',
-			'pipe-isolated-R'
-        ];
+        const groups = {
+            'steam pipe': [
+                'steam-pipe',
+                'pipe-vertical',
+                'pipe-horizontal',
+                'pipe-4-junction',
+                'pipe-3-junction-L',
+                'pipe-3-junction-R',
+                'pipe-3-junction-U',
+                'pipe-3-junction-D',
+                'pipe-corner-DL',
+                'pipe-corner-DR',
+                'pipe-corner-UL',
+                'pipe-corner-UR',
+                'pipe-isolated-U',
+                'pipe-isolated-D',
+                'pipe-isolated-L',
+                'pipe-isolated-R'
+            ],
+            'steam crossover': ['steam crossover ULDR', 'steam crossover URDL'],
+            'steam vent': ['steam vent L', 'steam vent R'],
+            'steam valve': ['steam valve left', 'steam valve right'],
+            'steam engine': ['steam engine L', 'steam engine R'],
+            'steam funnel': ['steam funnel left', 'steam funnel right']
+        };
 
-		const crossover_group = [
-			""
-		]
-
-        // Count the pipes
-        pipeNames.forEach(itemName => {
-            const count = filteredData.filter(a => a.name === itemName).length;
-            steamPipeCount += count; // Aggregate count for steam pipes
-        });
-
-        // Display the aggregated count for steam pipes
-        if (steamPipeCount > 0) {
-            count_display.innerHTML += "<b>steam pipes: " + steamPipeCount + "</b><br />";
-            min_1 = true; // Set min_1 to true if there are steam pipes
+        // Iterate over each group and display the counts
+        for (let groupName in groups) {
+            if (countAndDisplay(groups[groupName], groupName, filteredData, count_display)) {
+                min_1 = true;
+            }
         }
 
-        // Count and display other items
+        // Count and display other items (non-pipe, non-steam)
         items.forEach(item => {
-            const count = filteredData.filter(a => a.name === item.name).length;
-            if (count > 0) {
-				if(!item.name.includes('pipe')){
-                count_display.innerHTML += "<b>" + item.name + ": " + count + "</b><br />";
-                min_1 = true; // Set min_1 to true if any item is counted
-				}
+            if (!item.name.includes('pipe') && !item.name.includes('crossover') &&
+                !item.name.includes('vent') && !item.name.includes('valve') && 
+                !item.name.includes("engine")) {
+
+                let count = filteredData.filter(a => a.name === item.name).length;
+                if (count > 0) {
+                    count_display.innerHTML += `<b>${item.name}: ${count}</b><br />`;
+                    min_1 = true;
+                }
             }
         });
 
+        // If no blocks were counted, display a message
         if (!min_1) {
             count_display.innerHTML += "no blocks to count";
         }
@@ -1350,13 +1361,6 @@ function removePipe(row, col) {
 
 
 
-
-
-
-
-
-
-
 					let multi_activator_toggle = false;
 
 					
@@ -1427,7 +1431,7 @@ function removePipe(row, col) {
 						let i_ = activator.id.replace('activator-', '');
 						if(!valid_activators.includes(gridData[Math.floor(i_ / 100)][ i_ % 100].name))
 							return;
-						activator.innerHTML = activator.value;
+							activator.innerHTML = activator.value;
 					})
 					
 					multi_activator_toggle = false;
@@ -1441,10 +1445,19 @@ function removePipe(row, col) {
 			function confirmMultiActivate(){
 				console.log('attempted', multi_activator_list);
 				const activators = multi_activator_list
-					.map(item => document.getElementById("activator-" + item.i))
+				if(activators.length == 0){
+					swal("NO ACTIVATORS SELECTED!", "This mode allows you to select and activate multiple activators at once, exlcuding engines. You've currently not selected any activators.", "error");
+					return;
+				}
+
+				activators.map(item => document.getElementById("activator-" + item.i))
 					.filter(el => el !== null);  // Filter out any null elements
 
-				activators.length && activators.forEach(el => el.click());
+				activators.forEach(el => {
+				console.log(Object.keys(el))
+				document.getElementById("activator-" + el.i).click()
+			})
+				;
 			}
 
 

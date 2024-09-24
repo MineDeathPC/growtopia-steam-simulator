@@ -229,7 +229,7 @@
   	font-family     : 'Roboto Mono', monospace;
   	padding         : 5px 10px;
   	border-radius   : 5px;
-  	font-size       : 10px;
+  	font-size       : 0.6rem;
   }
 
   #puff-counter {
@@ -243,7 +243,7 @@
   	font-family     : 'Roboto Mono', monospace;
   	padding         : 5px 10px;
   	border-radius   : 5px;
-  	font-size       : 8px;
+  	font-size       : 0.5rem;
   }
 
   #block-counter-button {
@@ -257,7 +257,7 @@
   	font-family     : 'Roboto Mono', monospace;
   	padding         : 5px 10px;
   	border-radius   : 5px;
-  	font-size       : 8px;
+  	font-size       : 0.5rem;
   }
 
   #block-count-display {
@@ -326,7 +326,7 @@
   	position   : fixed;
   	bottom     : 10px;
   	right      : 10px;
-  	font-size  : 9px;
+  	font-size  : 0.42rem;
   	color      : white;
   	font-family: 'Roboto Mono', monospace;
   	font-style : italic;
@@ -391,7 +391,7 @@
 
 #confirm_multi_activate_button {
 	position        : fixed;
-	top             : 233px;
+	top             : 225px;
 	/* Adjusted to be below the Save Build button */
 	right           : 22px;
 	z-index         : 20;
@@ -446,7 +446,7 @@
 	transform:translate(-50%,5%);
 	font-family     : 'Roboto Mono', monospace;
 	font-weight:bold;
-	font-size:1.5cm;
+	font-size:3.8rem;
 	margin:0;
 	z-index:22;
 }
