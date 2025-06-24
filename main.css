@@ -6,8 +6,17 @@
 
   	.orientation-message {
   		display: block;
+		position:relative;
+		z-index:100000;
   		/* Show a message */
   	}
+
+	#save_build_button, #load_build_button, #reset_grid_button, #multi_activate_button, #toggle-hint, #puff-counter, #block-counter-button, #block-count-display, #show_grid_button, #loading-text, #loading-video{
+		display:none;
+		z-index:0;
+		position:relative;
+		visibility:hidden;
+	}
 
   	body {
   		background-image: url("");

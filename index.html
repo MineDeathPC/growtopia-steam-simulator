@@ -42,13 +42,13 @@
    
 
     <!-- Hint text for showing inventory -->
-    <button id="toggle-hint" onclick="toggleInventory()">Tap or press 'I' to open inventory</button>
-	<h3 id="puff-counter" title="how many active steam puffs are present">Active steam puffs: 0</h3>
-	<button id="block-counter-button" onclick="toggleBlockCount()" title="how many blocks of each type are present on the grid">view block count</button>
-	<div id="block-count-display"><h2>block count [BETA]: </h2><br /><br /> </div>
+    <button id="toggle-hint" onclick="toggleInventory()" >Tap or press 'I' to open inventory</button>
+	<h3 id="puff-counter" title="how many active steam puffs are present" >Active steam puffs: 0</h3>
+	<button id="block-counter-button" onclick="toggleBlockCount()"  title="how many blocks of each type are present on the grid">view block count</button>
+	<div id="block-count-display" ><h2>block count [BETA]: </h2><br /><br /> </div>
 
     <!-- Toggle Grid Button -->
-    <button id="show_grid_button" alt="toggle grid" onclick="mobileToggle()">Hide Grid (G)</button>
+    <button id="show_grid_button" alt="toggle grid"  onclick="mobileToggle()">Hide Grid (G)</button>
 	
 	 
      <button id="save_build_button" onclick="saveBuild()">Save Build</button>
@@ -60,11 +60,11 @@
     <div id="example-builds-container" style="display:none; position:fixed; width:50%; height:50%; z-index:15; top:50%; left:50%; transform:translate(-50%, -50%); padding:20px; background:white; border:1px solid 	#ccc; box-shadow:0px 0px 10px rgba(0, 0, 0, 0.1);"></div>
 	
 	
-<div class="fixed-text">Created By: <i style="color:rgb(255, 195, 30);"><b>MineDeath </b></i></div>
+<div class="fixed-text" style="display:none;">Created By: <i style="color:rgb(255, 195, 30);"><b>MineDeath </b></i></div>
 
 	<div id="loading-cont">
-		<div id="loading-text">LOADING</div>
-			<video id="loading-video" autoplay loop muted>
+		<div id="loading-text" >LOADING</div>
+			<video id="loading-video"  autoplay loop muted>
 				
 				<source src="assets/gear-vid.mp4" type="video/mp4">
 			  </video>
@@ -790,10 +790,29 @@ function toggleBlockCount() {
 		showLoad(4)
 
 		//WHEN PAGE IS FULLY LOADED
-		window.onload = function(){
+		window.onresize = function(){
+			window.location.reload()
+		}
 
+		window.onload = function(){
+		document.getElementById("loading-text").style.display = "block"
+	    document.getElementById("loading-video").style.display = "block"
+
+			
+
+
+			if(document.getElementById("save_build_button").style.display != "none"){
 			setTimeout(toggleInventory, 1000);
 			setTimeout(toggleInventory, 1000);
+			
+
+			}
+			else{
+		
+			//setInterval(()=>{window.location.reload()},1000);
+			}
+
+
 			GenerateMainGrid()
 			
 			let prev_data = localStorage.getItem('grid-data');
