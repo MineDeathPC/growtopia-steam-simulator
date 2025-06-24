@@ -37,7 +37,7 @@
 	
 
     <div id="grid"></div>
-	
+	<div id="ori" style="display:block;"></div>
 	<div id="top-bar"></div>
    
 
@@ -76,6 +76,7 @@
 <script src = "index.js"></script>
 <script>
 
+console.log("version:1.0")
 
 
 	//important constants
@@ -793,6 +794,10 @@ function toggleBlockCount() {
 		window.onresize = function(){
 			window.location.reload()
 		}
+		window.addEventListener('orientationchange', function () {
+  console.log("Orientation changed to:", screen.orientation.angle);
+  window.location.reload()
+});
 
 		window.onload = function(){
 		document.getElementById("loading-text").style.display = "block"
@@ -800,25 +805,28 @@ function toggleBlockCount() {
 
 			
 
-
-			if(document.getElementById("save_build_button").style.display != "none"){
+			
+			if(document.getElementById("ori").style.display != "none"){
 			setTimeout(toggleInventory, 1000);
 			setTimeout(toggleInventory, 1000);
+			console.log(document.getElementById("toggle-hint").style)
 			
 
 			}
 			else{
-		
-			//setInterval(()=>{window.location.reload()},1000);
+			console.log("hidden")
+			return
 			}
 
-
+			if(document.getElementById("ori").style.display != "none"){
 			GenerateMainGrid()
+			
 			
 			let prev_data = localStorage.getItem('grid-data');
 			if(prev_data)
 			setTimeout(()=>{loadFromJSONString(prev_data)},500)
 			setInterval(SaveGridDataLocal,5000)
+			}
 		}
 
 

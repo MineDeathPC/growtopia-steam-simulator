@@ -18,6 +18,10 @@
 		visibility:hidden;
 	}
 
+	#ori{
+		display:none;
+	}
+
   	body {
   		background-image: url("");
   		background-color: rgb(6, 49, 99);
