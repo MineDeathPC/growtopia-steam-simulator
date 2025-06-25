@@ -754,16 +754,16 @@ function toggleBlockCount() {
 		console.log("STEAM CODE: ", STEAM_CODE.COUNTER.steam_powered_items, STEAM_CODE.COUNTER.steam_generators,  STEAM_CODE.COUNTER.steam_powered_items > STEAM_CODE.POWERED_ITEMS_LIMIT , STEAM_CODE.COUNTER.steam_generators <= STEAM_CODE.GENERATORS_LIMIT,  )
 		if(STEAM_CODE.COUNTER.steam_powered_items > STEAM_CODE.POWERED_ITEMS_LIMIT && STEAM_CODE.COUNTER.steam_generators <= STEAM_CODE.GENERATORS_LIMIT){
 		
-			 count_display.innerHTML += `\n<p style="color:rgb(255,80,80);">STEAM CODE HAS BEEN VIOLATED!<br />THE STEAM CODE PROHIBITS MORE THAN 100 STEAM POWERED ITEMS IN A WORLD!</p>`
+			 //count_display.innerHTML += `\n<p style="color:rgb(255,80,80);">STEAM CODE HAS BEEN VIOLATED!<br />THE STEAM CODE PROHIBITS MORE THAN 100 STEAM POWERED ITEMS IN A WORLD!</p>`
 		 }
 		else if(STEAM_CODE.COUNTER.steam_generators > STEAM_CODE.GENERATORS_LIMIT && STEAM_CODE.COUNTER.steam_powered_items <= STEAM_CODE.POWERED_ITEMS_LIMIT ){
-			 count_display.innerHTML += `\n<p style="color:rgb(255,80,80);">STEAM CODE HAS BEEN VIOLATED!<br />THE STEAM CODE PROHIBITS MORE THAN 20 STEAM GENERATORS IN A WORLD!</p>`
+			 //count_display.innerHTML += `\n<p style="color:rgb(255,80,80);">STEAM CODE HAS BEEN VIOLATED!<br />THE STEAM CODE PROHIBITS MORE THAN 20 STEAM GENERATORS IN A WORLD!</p>`
 		 }
 		else if(STEAM_CODE.COUNTER.steam_powered_items > STEAM_CODE.POWERED_ITEMS_LIMIT && STEAM_CODE.COUNTER.steam_generators > STEAM_CODE.GENERATORS__LIMIT){
-			 count_display.innerHTML += `\n<p style="color:rgb(255,80,80);">STEAM CODE HAS BEEN VIOLATED!<br />THE STEAM CODE PROHIBITS MORE THAN 20 STEAM GENERATORS AND 100 STEAM POWERED ITEMS IN A WORLD!</p>`
+			 //count_display.innerHTML += `\n<p style="color:rgb(255,80,80);">STEAM CODE HAS BEEN VIOLATED!<br />THE STEAM CODE PROHIBITS MORE THAN 20 STEAM GENERATORS AND 100 STEAM POWERED ITEMS IN A WORLD!</p>`
 		 }
 		else{
-			count_display.innerHTML += `\n<p style="color:lightgreen;">The steam code hasn't been violated</p>`
+			//count_display.innerHTML += `\n<p style="color:lightgreen;">The steam code hasn't been violated</p>`
 		}
 		
 
