@@ -11,7 +11,7 @@
   		/* Show a message */
   	}
 
-	#save_build_button, #load_build_button, #reset_grid_button, #multi_activate_button, #toggle-hint, #puff-counter, #block-counter-button, #block-count-display, #show_grid_button, #loading-text, #loading-video{
+	#save_build_button, #steam_code_enabler, #load_build_button, #reset_grid_button, #multi_activate_button, #toggle-hint, #puff-counter, #block-counter-button, #block-count-display, #show_grid_button, #loading-text, #loading-video{
 		display:none;
 		z-index:0;
 		position:relative;
@@ -107,6 +107,22 @@
 
   .hightlight {
   	border-color: rgb(6, 252, 67);
+  }
+
+
+
+
+
+  #steam_code_enabler{
+	color:white;
+	position:absolute;
+	top:110px;
+	font-size:0.8em;
+	z-index:0;
+	position:fixed;
+	background-color: rgba(0, 0, 0, 0.5); 
+  	padding: 8px 12px;                 
+  	border-radius: 6px;                 
   }
 
 
@@ -337,12 +353,14 @@
 
   .fixed-text {
   	position   : fixed;
-  	bottom     : 10px;
+  	bottom     : 20px;
   	right      : 10px;
-  	font-size  : 0.42rem;
+  	font-size  : 0.7rem;
   	color      : white;
   	font-family: 'Roboto Mono', monospace;
   	font-style : italic;
+	background-color: rgba(50, 50, 50, 0.7);
+	border-radius:0%;
   }
 
   #load_build_button {
@@ -380,7 +398,7 @@
 
   #multi_activate_button {
 	position        : fixed;
-	top             : 175px;
+	top             : 225px;
 	/* Adjusted to be below the Save Build button */
 	right           : 25px;
 	z-index         : 20;
@@ -404,7 +422,7 @@
 
 #confirm_multi_activate_button {
 	position        : fixed;
-	top             : 225px;
+	top             : 275px;
 	/* Adjusted to be below the Save Build button */
 	right           : 22px;
 	z-index         : 20;
@@ -420,6 +438,20 @@
 	display:none;
 }
 
+
+  #example-builds-container::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  #example-builds-container::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  #example-builds-container::-webkit-scrollbar-thumb {
+    background-color: #00ff00;
+    border-radius: 6px;
+    border: 2px solid black;
+  }
 
 
 
@@ -466,7 +498,7 @@
 
   #load_example_build_button {
   	position        : fixed;
-  	top             : 135px;
+  	top             : 170px;
   	/* Adjusted to be below the Save Build button */
   	right           : 10px;
   	width           : 2.4cm;
