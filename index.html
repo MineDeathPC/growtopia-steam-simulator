@@ -175,6 +175,11 @@ console.log("version:2.0")
 		const intial_grid_border_style = " 1px solid rgba(0, 230, 230, 0.7)";
 		const pipe_texture_update_interval = 400;
 
+		const spirit_storage_unit_max_duration = 1000;
+		const revolver_cooldown_duration = 2000;
+		const stomper_cooldown_duration = 2000; //~2500 (unsure)
+
+
 
 
 		//used to keep track of steam code restrictions
@@ -218,6 +223,23 @@ console.log("version:2.0")
 
 		//function to handle the actual loading of example builds
 		function load_example_build(build_id){
+
+			swal({
+			title: "Are you sure?",
+			text: "The grid will be cleared in order to load the build. If you haven't done so already, We would suggest saving this build before loading a new one.",
+			icon: "warning",
+			buttons: true,
+			dangerMode: true,
+		}).then((result)=>{
+			if(!result){
+				console.log("canceled example build...")
+				return;
+				resetGrid();
+			}
+		
+				
+
+
 			console.log('SELECTED TO LOAD BUILD, ', build_id);
 			let example_builds = { 
 				1:`[[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,{"name":"steam revolver"},null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,{"name":"steam tubes"},null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,{"name":"steam tubes"},{"name":"steam tubes"},{"name":"steam tubes"},{"name":"steam tubes"},{"name":"steam tubes"},{"name":"steam scrambler"},{"name":"steam tubes"},{"name":"steam tubes"},{"name":"steam tubes"},{"name":"steam tubes"},{"name":"steam tubes"},null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,{"name":"steam tubes"},null,null,null,null,{"name":"steam tubes"},null,null,null,null,{"name":"steam tubes"},null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,{"name":"pipe-corner-DR"},{"name":"pipe-3-junction-U"},{"name":"pipe-corner-DL"},null,null,{"name":"pipe-corner-DR"},{"name":"pipe-3-junction-U"},{"name":"pipe-corner-DL"},null,null,{"name":"pipe-corner-DR"},{"name":"pipe-3-junction-U"},{"name":"pipe-corner-DL"},null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,{"name":"pipe-vertical"},null,{"name":"pipe-vertical"},null,null,{"name":"pipe-vertical"},null,{"name":"pipe-vertical"},null,null,{"name":"pipe-vertical"},null,{"name":"pipe-vertical"},null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,{"name":"steam tubes"},{"name":"steam door","state":"closed"},{"name":"steam tubes"},null,null,{"name":"steam tubes"},{"name":"steam door","state":"closed"},{"name":"steam tubes"},null,null,{"name":"steam tubes"},{"name":"steam door","state":"closed"},{"name":"steam tubes"},null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,{"name":"steam tubes"},{"name":"steam door","state":"open"},{"name":"copper"},null,null,{"name":"steam tubes"},{"name":"steam door","state":"open"},{"name":"copper"},null,null,{"name":"steam tubes"},{"name":"steam door","state":"open"},{"name":"copper"},null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,{"name":"steam tubes"},{"name":"steam tubes"},{"name":"copper"},null,null,{"name":"steam tubes"},{"name":"steam tubes"},{"name":"copper"},null,null,{"name":"steam tubes"},{"name":"steam tubes"},{"name":"copper"},null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]]`,
@@ -230,6 +252,8 @@ console.log("version:2.0")
 					console.log("JSON FOR EXAMPLE BUILD VALID?")
 					loadFile(json_to_load_for_example, true);
 				}
+
+			})
 				
 		}
 		
@@ -406,7 +430,7 @@ function loadBuild() {
 }
 
 
-function loadFile(eventOrJsonString = null, viaExampleSys = false) {
+async function loadFile(eventOrJsonString = null, viaExampleSys = false) {
 	if (multi_activator_toggle) {
 		swal("Multi Selection mode enabled!", "Can't use this feature while in this mode, sorry!", "error");
 		return;
@@ -433,10 +457,10 @@ function loadFile(eventOrJsonString = null, viaExampleSys = false) {
 		return;
 	}
 
-	jsonDataPromise.then(jsonString => {
+	jsonDataPromise.then(async jsonString => {
 		try {
 			const loadedGridData = JSON.parse(jsonString);
-			resetGrid(); // Clear current grid
+			await resetGrid(); // Clear current grid
 
 			loadedGridData.forEach((row, rowIndex) => {
 				row.forEach((blockData, colIndex) => {
@@ -468,7 +492,7 @@ function loadFile(eventOrJsonString = null, viaExampleSys = false) {
 			}
 				
 		} catch (err) {
-			alert("Failed to load build. Invalid JSON format.");
+			swal("Build failed to load!", "The build data seems to be corrupted and can't be loaded into the simulator!\n\nThis may be due to an error that would eventually be resolved at a later date, so please do not delete any associated save files!.", "error")
 			console.error("Error loading JSON build:", err);
 		}
 
@@ -476,21 +500,31 @@ function loadFile(eventOrJsonString = null, viaExampleSys = false) {
 		setTimeout(mobileToggle, 1000);
 	});
 }
+	
 
 
 // Function to restore the specific block state during loading
 function restoreBlockState(block, state,row=null,col=null) {
-setTimeout(()=>{
-    if (!block) return;
+	try{
+	if(!block.hasOwnProperty('name')||gridData[row][col]=='null'||!gridData[row][col])
+		return; 
 
-    if (block.name === "steam crank") {
-        gridData[row][col].flow = state; // Set the flow state directly
-        gridData[row][col].updateImg(row,col); // Update the crank image based on the restored flow
-    } else if (block.name === "steam door") {
-         gridData[row][col].state = state; // Set the door state directly
-          gridData[row][col].updateImg(row,col); // Update the door image based on state
-    }
-	},1000)
+	setTimeout(()=>{
+		if (!block) return;
+
+		if (block.name === "steam crank") {
+			gridData[row][col].flow = state; // Set the flow state directly
+			gridData[row][col].updateImg(row,col); // Update the crank image based on the restored flow
+		} else if (block.name === "steam door") {
+			gridData[row][col].state = state; // Set the door state directly
+			gridData[row][col].updateImg(row,col); // Update the door image based on state
+		}
+		},1000)
+	}
+	catch(e){
+		console.log("failed to restore block state! ", e)
+		return;
+	}
 }
 
 
@@ -550,7 +584,8 @@ function resetGrid_button() {
 
 
 //same as above but without warning
-function resetGrid() {
+async function resetGrid() {
+	console.log("attempting to clear the grid")
 	if(multi_activator_toggle){
 		swal("Multi Selection mode enabled!", "Can't use this feature while in this mode, sorry!", "error")
 		return
@@ -856,7 +891,7 @@ function toggleBlockCount() {
 			{ name: "steam crossover ULDR" },
 			{ name: "steam scrambler" },      
 			{ name: "steam organ" },			
-            { name: "steam pipe"}, //not implemented yet
+            { name: "steam pipe"},
 			{ name: "steam vent L" },     
 			{ name: "steam vent R" },   	
             { name: "steam revolver" },
@@ -867,8 +902,11 @@ function toggleBlockCount() {
 			{ name: "steam launcher" },
             { name: "steam spikes" },
             { name: "steam lamp" },
+			{name:"spirit storage unit"}, //new
            
 			{ name: "copper" },
+			{name: "steel block"}, //new 
+			
 
 			{ name: 'steam-pipe', hide: null },
 			{ name: 'pipe-vertical', hide: null },
@@ -912,6 +950,10 @@ function toggleBlockCount() {
 			"steam lamp",
 			"steam launcher",
 			"steam scrambler",
+
+			"spirit storage unit",
+			"spirit-storage-unit",
+
 			
 			"steam door",
 			"steam spikes",
@@ -950,14 +992,16 @@ function toggleBlockCount() {
 			"steam stomper" ,
 			"steam engine L" ,
 			"steam engine R",
-			"copper"
+			"copper",
+			"steel"
 		];
 		
 		const single_powered = [    
             { name: "steam door" },
             { name: "steam spikes" },
 			{ name: "steam lamp" },
-		    { name: "steam launcher" }
+		    { name: "steam launcher" },
+			{name : "spirit storage unit"}
         ];
 
 
@@ -984,8 +1028,15 @@ function toggleBlockCount() {
             
             const img = document.createElement('img');
 
+			//pipe textures are handled differently
 			if(!item.name.includes('pipe')){
-          	  img.src = "assets/" + item.name.toLowerCase().replaceAll(" ", "-") + ".png";
+				
+				img.src = "assets/" + item.name.toLowerCase().replaceAll(" ", "-") + ".png";
+				img.onerror = function () {
+					this.onerror = null; // Prevent infinite loop if "missing.jfif" also fails
+					this.src = "assets/missing.jfif";
+				};
+
 			}
 			else{
 				img.src = "assets/" + "steam-pipe-true-icon.png"
@@ -1004,7 +1055,7 @@ function toggleBlockCount() {
             div.addEventListener('click', () => {
 				if(item.name.includes("pipe")){
 					if(!betaWarned){
-					swal("BETA", "steam pipes are still in very early development and may not function as expected!", "warning");
+					//swal("BETA", "steam pipes are still in very early development and may not function as expected!", "warning");
 					betaWarned = true;
 					}
 
@@ -1023,7 +1074,14 @@ function toggleBlockCount() {
 
         
 
+
+
+		//init gridData programatically
 		let gridData = Array.from({ length: 100 }, () => Array(100).fill(null)); // 2D array for grid
+
+
+
+
         //GENERATE MAIN 100 BY 100 GRID
         function GenerateMainGrid(){
 			for (let i = 0; i < 10000; i++) {
@@ -1037,14 +1095,10 @@ function toggleBlockCount() {
 		}
 		
 		
-
-
+		//show loading screen
 		showLoad(4)
 
-		//WHEN PAGE IS FULLY LOADED
-		window.onresize = function(){
-		//	window.location.reload()
-		}
+	
 		window.addEventListener('orientationchange', function () {
   console.log("Orientation changed to:", screen.orientation.angle);
   window.location.reload()
@@ -1093,11 +1147,14 @@ function toggleBlockCount() {
 			let prev_data = localStorage.getItem('grid-data');
 			if(prev_data)
 			setTimeout(()=>{loadFromJSONString(prev_data)},500)
-			setInterval(SaveGridDataLocal,5000)
+
+			//gridData is saved locally every 3 seconds
+			setInterval(SaveGridDataLocal,3000)
 			}
 		}
 
 
+		//save the data
 		function SaveGridDataLocal(){
 				localStorage.setItem('grid-data',JSON.stringify(gridData))
 			}
@@ -1105,10 +1162,10 @@ function toggleBlockCount() {
 			
 
 		
-		function loadFromJSONString(jsonString) {
+		async function loadFromJSONString(jsonString) {
 			try {
 				const loadedGridData = JSON.parse(jsonString);
-				resetGrid(); 
+				await resetGrid(); 
 		
 				loadedGridData.forEach((row, rowIndex) => {
 					row.forEach((blockData, colIndex) => {
@@ -1123,7 +1180,18 @@ function toggleBlockCount() {
 								restoreBlockState(blockData, blockData.state, rowIndex, colIndex); 
 							}
 
-							placeBlock(document.getElementById(`grid-cell-${rowIndex * 100 + colIndex}`), rowIndex * 100 + colIndex);
+							try{
+							let element_load_reference =  document.getElementById(`grid-cell-${rowIndex * 100 + colIndex}`)
+							console.log("INSIDE: ", element_load_reference)
+							placeBlock(element_load_reference, rowIndex * 100 + colIndex);
+							}
+							catch(e){
+								console.log("INTERNAL: ", e)
+								return; //essentially continue
+							}
+						}
+						else{
+
 						}
 					});
 				});
@@ -1291,11 +1359,46 @@ function removePipe(row, col) {
 
 	
 //main function to handle placing blocks on the grid
-		function placeBlock(cell, i, control="build", saved_value=[], main_event = null) {
+		async function placeBlock(cell, i, control="build", saved_value=[], main_event = null) {
+			try{
+			console.log("PB")
+
+			const row = Math.floor(i / 100);
+			const col = i % 100;
+
+
+
+			
+			//handling any corrupted grid data by attempting hard fixes to values
+			if(!row||!col){
+				console.log("row/col invalid!")
+				console.log("REVISION PLACEMENT GRID O MATRIX 0")
+				return;
+			}
+			if(gridData[row]==null||!gridData[row]){
+				console.log("REVISION PLACEMENT GRID O MATRIX 1")
+				gridData[row] = {}
+			
+			}
+
+			if(!gridData[row].hasOwnProperty(col)){
+				console.log("REVISION PLACEMENT GRID O MATRIX 2")
+				gridData[row][col] = 'null'
+			}
+
+			if(!gridData[row][col]){
+				console.log("REVISION PLACEMENT GRID O MATRIX 3")
+				gridData[row][col] = 'null'
+			}
+			//////////////////////////////////////////////////////////////////////
+
+
+			console.log("to be placed: "+row,col,gridData[row][col],typeof(gridData[row]))
 			
 		
+			//dont allow block placement while in multi select mode
 			if(multi_activator_toggle){
-				console.log("SRY")
+				console.log("SRY IN MULTI ACT MODE!")
 				return
 			}
 			
@@ -1307,8 +1410,7 @@ function removePipe(row, col) {
 			return
 		}
 		
-			const row = Math.floor(i / 100);
-			const col = i % 100;
+			
 			removePipe(row, col) 
 
 			if (cell.hasChildNodes()) {
@@ -1349,10 +1451,8 @@ function removePipe(row, col) {
 			
 			
 			
-			
+			//selected item is indeed valid
 			else if (selectedItem &&selectedItem.hasOwnProperty("name")) {
-
-
 				//steam code check
 
 						if(Check_Steam_Code(selectedItem.name)[0] && STEAM_CODE.ENABLED){
@@ -1377,9 +1477,21 @@ function removePipe(row, col) {
 			
 		
 				
+
+
+				//default placing rules, may be overriden later
+				//probably applies to 'copper'
 				const img = document.createElement('img');
 				if (!selectedItem.name.includes("pipe"))
+
+
 				img.src = "assets/" + selectedItem.name.toLowerCase().replaceAll(" ", "-") + ".png";
+				img.onerror = function () {
+					this.onerror = null;
+					this.src = "assets/missing.jfif";
+				};
+
+
 				img.alt = selectedItem.name;
 				cell.appendChild(img);
 				cell.style.border = 'none';
@@ -1387,7 +1499,6 @@ function removePipe(row, col) {
 				 // Add a shadow effect
 				 cell.style.filter = block_shadow_style
 				
-
 				//handling how the object should be, depending on block
 				//this can be overwritten later
 				gridData[row][col] = {
@@ -1684,6 +1795,28 @@ function removePipe(row, col) {
 					return;
 				}
 
+
+
+
+
+
+
+					//placing a spirit storage unit
+					if (selectedItem.name.includes("spirit")) {
+					console.log('spirit storage unit placed');
+					let ssu = new Spirit_Storage_Unit(selectedItem.name, "off");
+					gridData[row][col] = ssu; // Store the ssu in the grid
+					
+
+
+
+					//steam code counter handler
+					//true ? STEAM_CODE.COUNTER.steam_powered_items++:null;
+					return;
+				}
+
+			
+
 				
 				//placing steam vent
 				if (selectedItem.name.includes("vent")) {
@@ -1734,7 +1867,11 @@ function removePipe(row, col) {
 
 			}
 			
-			
+		}
+		catch(e){
+			//handling any errors during block placement that may not have been previously caught
+			console.log("error during block placement! ", e);
+		}
 		} 
 
 
@@ -1934,7 +2071,11 @@ function removePipe(row, col) {
 				let in_grid = gridData[row][col]
 				return in_grid;
 			}
-			return blockDatasLatency[unique_1]()
+			
+			let result = blockDatasLatency[unique_1](); // call it
+			delete blockDatasLatency[unique_1]; // clean up after
+			return result; // then return
+
 		}	
 
 
@@ -2004,6 +2145,7 @@ function removePipe(row, col) {
 				let instance = this;
 				change_image_all_functions[unique_1] = function(){	changeBlockImage(row,col,instance.getImage())}
 				change_image_all_functions[unique_1]();
+				delete change_image_all_functions[unique_1]//new cleanup
 			
 			}
 			
@@ -2011,7 +2153,62 @@ function removePipe(row, col) {
 				return this.state=="on"?"assets/steam-launcher-on.png":"assets/steam-launcher.png"
 			}
 		}
-		
+
+
+
+
+
+		//spirit storage unit class
+		class Spirit_Storage_Unit {
+		constructor(name, ssu_state = "off") {
+			this.name = name;
+			this.ssu_state = ssu_state;
+			this._deactivationTimeout = null; // track any existing timeout
+		}
+
+		toggleState() {
+			this.ssu_state = this.ssu_state === "off" ? "on" : "off";
+		}
+
+		activate(row,col, durationSeconds = spirit_storage_unit_max_duration/1000) { 
+			this.ssu_state = "on";
+
+			// Clear any previous timeout to avoid stacking
+			if (this._deactivationTimeout) {
+				clearTimeout(this._deactivationTimeout);
+			}
+
+			// Schedule deactivation
+			this._deactivationTimeout = setTimeout(() => {
+				this.deactivate(row,col);
+				console.log("deactivated")
+			}, durationSeconds * 1000);
+		}
+
+		deactivate(row,col) {
+			this.ssu_state = "off";
+			this.updateImg(row,col)
+			console.log("In class deactivation")
+			this._deactivationTimeout = null;
+		}
+
+		updateImg(row, col) {
+			let unique_1 = unique(15);
+			let instance = this;
+			change_image_all_functions[unique_1] = function () {
+				changeBlockImage(row, col, instance.getImage());
+			};
+			change_image_all_functions[unique_1]();
+			delete change_image_all_functions[unique_1]; // cleanup
+		}
+
+		getImage() {
+			return this.ssu_state === "on"
+				? "assets/ssu-on.png"
+				: "assets/spirit-storage-unit.png";
+		}
+	}
+
 		
 		
 		
@@ -2035,6 +2232,7 @@ function removePipe(row, col) {
 				let unique_1 = unique(20)
 				change_image_all_functions[unique_1] = function(){ changeBlockImage(row, col, "assets/steam-vent-" + instance.vent_direction + "-on.png")}
 				change_image_all_functions[unique_1]()
+				delete change_image_all_functions[unique_1]
 
 				// Clear any existing timeout to avoid multiple overlapping timeouts
 				if (this.timeout) {
@@ -2049,6 +2247,8 @@ function removePipe(row, col) {
 					let unique_1 = unique(20)
 					change_image_all_functions[unique_1] = function(){ changeBlockImage(row, col, "assets/steam-vent-" + instance.vent_direction + ".png")}
 					change_image_all_functions[unique_1]()
+					delete change_image_all_functions[unique_1]
+
 					console.log('vent off');
 					this.timeout = null; // Reset the timeout variable
 				}, global_vent_max_duration); // Use the global vent duration
@@ -2073,6 +2273,7 @@ function removePipe(row, col) {
 				let unique_1 = unique(15)
 				change_image_all_functions[unique_1] = function(){ 	changeBlockImage(row, col, "assets/steam-lamp-on.png") }
 				change_image_all_functions[unique_1]()
+				delete change_image_all_functions[unique_1]
 			
 
 				// Clear any existing timeout to avoid multiple overlapping timeouts
@@ -2087,6 +2288,8 @@ function removePipe(row, col) {
 					let unique_1 = unique(15)
 					change_image_all_functions[unique_1] = function(){ changeBlockImage(row, col, "assets/steam-lamp.png") };
 					change_image_all_functions[unique_1]()
+					delete change_image_all_functions[unique_1]
+
 					console.log('lamp off');
 					this.timeout = null; // Reset the timeout variable
 				}, global_lamp_max_duration); // Use the global lamp duration
@@ -2228,14 +2431,22 @@ function removePipe(row, col) {
 
 		//steam puff mechanics
 		let Steam_Puffs = []
-		const id_length = 5;
+		const id_length = 15;
 		
 		
 		class Puff {
 			constructor(current_direction,position={row:null,col:null},distance_moved=0,collector_max_duration=global_collector_max_duration,unique_id,foundSpot = false,ele=null){
 				this.current_direction = current_direction;
 				this.position = position
-				this.unique_id = unique(id_length);
+				
+				// Generate unique ID not already used by any existing Puff
+				let new_id;
+				do {
+					new_id = unique(id_length);
+				} 
+				while (Steam_Puffs.some(puff => puff.unique_id === new_id));
+				this.unique_id = new_id;
+
 				this.distance_moved = distance_moved;
 				this.collector_max_duration = collector_max_duration;				
 				this.foundSpot = foundSpot;
@@ -2250,9 +2461,10 @@ function removePipe(row, col) {
 			//generate a new steam puff visually
 			generate_puff(row,col){
 				 let cell = document.getElementById(`grid-cell-${ parseInt(this.position.row) * 100 + parseInt(this.position.col)}`);
+				 var puffElement;
 			     if (cell) {
 					// Create and display a new steam puff element
-					const puffElement = document.createElement('div');
+					puffElement = document.createElement('div');
 					puffElement.id = "puff-" + this.unique_id
 					
 					puffElement.style.opacity = 0.7
@@ -2269,6 +2481,9 @@ function removePipe(row, col) {
 					document.getElementById('puff-counter').innerHTML = "Active steam puff count: " + Steam_Puffs.length;
 					setTimeout(()=>{this.recursive_move()},this.puff_speed)
 				 }
+
+
+				 console.log("Generated a new steam puff, ", this, puffElement);
 	 
 		}
 		
@@ -2390,9 +2605,10 @@ function removePipe(row, col) {
 				
 				
 				//steam spike,launcher and lamp advanced move limiter
+				//bascially everything that can only accept downwards power
 				if(adjCells[1]){
 					if(adjCells[1].hasOwnProperty('name')){
-						if(adjCells[1].name.includes("spike")||adjCells[1].name.includes("lamp")||adjCells[1].name.includes("launcher")){					
+						if(adjCells[1].name.includes("spike")||adjCells[1].name.includes("lamp")||adjCells[1].name.includes("launcher")||adjCells[1].name.includes("spirit")){					
 							ValidArr["D"] = null
 							adjCells[1] = null
 							console.log('limited')
@@ -2402,7 +2618,7 @@ function removePipe(row, col) {
 				
 				if(adjCells[2]){
 					if(adjCells[2].hasOwnProperty('name')){
-						if(adjCells[2].name.includes("spike")||adjCells[2].name.includes("lamp")||adjCells[2].name.includes("launcher")){					
+						if(adjCells[2].name.includes("spike")||adjCells[2].name.includes("lamp")||adjCells[2].name.includes("launcher")||adjCells[2].name.includes("spirit")){					
 							ValidArr["L"] = null
 							adjCells[2] = null
 							console.log('limited')
@@ -2412,7 +2628,7 @@ function removePipe(row, col) {
 				
 				if(adjCells[3]){
 					if(adjCells[3].hasOwnProperty('name')){
-						if(adjCells[3].name.includes("spike")||adjCells[3].name.includes("lamp")||adjCells[3].name.includes("launcher")){						
+						if(adjCells[3].name.includes("spike")||adjCells[3].name.includes("lamp")||adjCells[3].name.includes("launcher")||adjCells[3].name.includes("spirit")){						
 							ValidArr["R"] = null
 							adjCells[3] =null
 							console.log('limited')
@@ -2660,7 +2876,6 @@ function removePipe(row, col) {
 				if(block.hasOwnProperty("name")){
 				if(block.name.includes("crank")){
 					if(this.current_direction=="U"&&block.flow=="horizontal"){
-						alert("v")
 						ValidArr.U = null
 					}
 					if(this.current_direction=="D"&&block.flow=="horizontal"){
@@ -2778,6 +2993,18 @@ function removePipe(row, col) {
 					setTimeout(function(){instance.kill_puff()},this.puff_speed)
 					return;
 				}
+
+				//activate SSU and kill puff
+				if (gridData[this.position.row][this.position.col].name.includes("spirit")) {
+					document.getElementById("puff-"+this.unique_id).style.backgroundColor = 'red'
+					document.getElementById("puff-"+this.unique_id).textContent = this.max_puff_distance-this.distance_moved+"\nUSED"
+					// Activate the SSU
+					gridData[this.position.row][this.position.col].activate(this.position.row,this.position.col);		
+					gridData[this.position.row][this.position.col].updateImg(this.position.row,this.position.col)		
+					let instance = this;
+					setTimeout(function(){instance.kill_puff()},this.puff_speed)
+					return;
+				}
 									
 				
 				//steam spike system activates spike and kills puff
@@ -2796,8 +3023,9 @@ function removePipe(row, col) {
 
 				
 				if(this.distance_moved >= this.max_puff_distance){
-				this.kill_puff()
-				return;
+					console.log("Killed a steam puff that traveled max distance!")
+					this.kill_puff()
+					return;
 				}
 			
 
@@ -3109,168 +3337,174 @@ if(this.distance_moved >= this.max_puff_distance){
 		
 		
 		
-		
+		//stores activators currently being processed
 		let activator_queue = {}
+		let revolverCooldowns = {}; // Key: "row,col" → Value: timestamp in ms
+		let stomperCooldowns = {}; // Key: "row,col" → timestamp
+
 		
 		
 		
 		 //used for revolver
-		 function steamSystem_main(act_r, act_c) {        
+		function steamSystem_main(act_r, act_c) {
+			let cellKey = `${act_r},${act_c}`;
+			let now = Date.now();
+
+			// Check cooldown (3000 ms = 3 seconds)
+			if (revolverCooldowns[cellKey] && now - revolverCooldowns[cellKey] < revolver_cooldown_duration) {
+				console.log("Revolver is on cooldown!");
+				return; // Exit early if on cooldown
+			}
+
+			// Set cooldown timestamp
+			revolverCooldowns[cellKey] = now;
+
 			let unique_1 = unique(20);
-			
-			activator_queue[unique_1] = function(){
-           // console.log(gridData);
-            const adjCells = adj(act_r, act_c);
-			
-			//additional check for spike/lamp/launcher below
-			if(adjCells[1]){
-				if(adjCells[1].hasOwnProperty('name')&&adjCells[1].name.includes('spike')){
-					adjCells[1] = null
-				}
-				if(adjCells[1].hasOwnProperty('name')&&adjCells[1].name.includes('lamp')){
-					adjCells[1] = null
-				}
-				if(adjCells[1].hasOwnProperty('name')&&adjCells[1].name.includes('launcher')){
-					adjCells[1] = null
-				}
-			}
-			
-			//more sus crank checks
-			if(adjCells[1]){
-				if(adjCells[1].hasOwnProperty('name')&&adjCells[1].name.includes('crank')){
-				if(adjCells[1].flow=="horizontal")
-					adjCells[1] = null
-				}
-			}
-			if(adjCells[0]){
-				if(adjCells[0].hasOwnProperty('name')&&adjCells[0].name.includes('crank')){
-				if(adjCells[0].flow=="horizontal")
-					adjCells[0] = null
-				}
-			}
+			activator_queue[unique_1] = function () {
+				const adjCells = adj(act_r, act_c);
 
-            
-            adjCells.forEach((cell, index) => {
-			if(cell)
-                console.log(`Adjacent ${index}: ${cell === "null" ? "null" : cell.name}`);
-            });
+				// Exclude spike/lamp/launcher
+				if (adjCells[1]) {
+					if (adjCells[1].hasOwnProperty('name') && adjCells[1].name.includes('spike')) {
+						adjCells[1] = null;
+					}
+					if (adjCells[1].hasOwnProperty('name') && adjCells[1].name.includes('lamp')) {
+						adjCells[1] = null;
+					}
+					if (adjCells[1].hasOwnProperty('name') && adjCells[1].name.includes('launcher')) {
+						adjCells[1] = null;
+					}
+				}
 
-			  if (
-			  adjCells[0] !== null && adjCells[0] !== undefined && 
-			  adjCells[0].hasOwnProperty('name') &&
-			  (
-				standard_behaviour.includes(adjCells[0].name) || 
-				adjCells[0].name.includes("funnel")
-			  )
-			) {
-	
-			  //spawn puff up
-			  let _puff = new Puff("U", { row: act_r - 1, col: act_c });
-			} 
-			else if (
-			  adjCells[1] !== null && adjCells[1] !== undefined && 
-			  adjCells[1].hasOwnProperty('name') &&
-			  (
-				standard_behaviour.includes(adjCells[1].name) || 
-				adjCells[1].name.includes("funnel")
-			  )
-			) {
-		
-			  //spawn puff down
-			  let _puff = new Puff("D", { row: act_r + 1, col: act_c });
-			} 
-			else {
-			  //nowhere to propagate to
-			}
+				// Horizontal crank filters
+				if (adjCells[1]) {
+					if (adjCells[1].hasOwnProperty('name') && adjCells[1].name.includes('crank')) {
+						if (adjCells[1].flow == "horizontal")
+							adjCells[1] = null;
+					}
+				}
+				if (adjCells[0]) {
+					if (adjCells[0].hasOwnProperty('name') && adjCells[0].name.includes('crank')) {
+						if (adjCells[0].flow == "horizontal")
+							adjCells[0] = null;
+					}
+				}
 
+				adjCells.forEach((cell, index) => {
+					if (cell)
+						console.log(`Adjacent ${index}: ${cell === "null" ? "null" : cell.name}`);
+				});
+
+				if (
+					adjCells[0] !== null && adjCells[0] !== undefined &&
+					adjCells[0].hasOwnProperty('name') &&
+					(standard_behaviour.includes(adjCells[0].name) || adjCells[0].name.includes("funnel"))
+				) {
+					let _puff = new Puff("U", { row: act_r - 1, col: act_c });
+				} else if (
+					adjCells[1] !== null && adjCells[1] !== undefined &&
+					adjCells[1].hasOwnProperty('name') &&
+					(standard_behaviour.includes(adjCells[1].name) || adjCells[1].name.includes("funnel"))
+				) {
+					let _puff = new Puff("D", { row: act_r + 1, col: act_c });
+				} else {
+					// no valid direction
+				}
+			};
+
+			activator_queue[unique_1]();
+			delete activator_queue[unique_1];
 		}
-		activator_queue[unique_1]()
 
-        }
+					
+			//used for stompers
+			function steamSystem_main2(act_r, act_c, provider = "") {
+			let cellKey = `${act_r},${act_c}`;
+			let now = Date.now();
+
+			// Check cooldown (3000 ms = 3 seconds)
+			if (stomperCooldowns[cellKey] && now - stomperCooldowns[cellKey] < stomper_cooldown_duration) {
+				console.log("Stomper is on cooldown!");
+				return; // Exit early if cooldown active
+			}
+
+			// Set new cooldown timestamp
+			stomperCooldowns[cellKey] = now;
+
+			let unique_1 = unique(20);
+
+			activator_queue[unique_1] = function () {
+				const adjCells = adj(act_r, act_c);
+
+				// Additional checks for spike/lamp/launcher and crank behavior
+				const checkAndNullify = (cell, direction) => {
+					if (cell && cell.hasOwnProperty('name')) {
+						if (
+							cell.name.includes('spike') || cell.name.includes('lamp') ||
+							cell.name.includes('launcher')
+						) {
+							return null;
+						}
+
+						if ((direction === 2 && cell.name.includes('valve')) || (direction === 3 && cell.name.includes('valve')))
+							return null;
+						if ((direction === 2 && cell.name.includes('vent')) || (direction === 3 && cell.name.includes('vent')))
+							return null;
+
+						if (cell.name.includes('crank')) {
+							if (
+								(direction === 1 && cell.flow === "vertical") ||
+								(direction === 2 && cell.flow === "horizontal") ||
+								(direction === 3 && cell.flow === "horizontal")
+							) {
+								return cell;
+							} else {
+								return null;
+							}
+						}
+					}
+					return cell;
+				};
+
+				adjCells[0] = checkAndNullify(adjCells[0], 0); // Up
+				adjCells[1] = checkAndNullify(adjCells[1], 1); // Down
+				adjCells[2] = checkAndNullify(adjCells[2], 2); // Left
+				adjCells[3] = checkAndNullify(adjCells[3], 3); // Right
+
+				// Log adjacent cells for debugging
+				adjCells.forEach((cell, index) => {
+					if (cell) {
+						console.log(`Adjacent ${index}: ${cell ? cell.name : "null"}`);
+					}
+				});
+
+				// Puff spawn priority: Down, Left, Right
+				if (
+					adjCells[1] !== null && adjCells[1].hasOwnProperty('name') &&
+					(standard_behaviour.includes(adjCells[1].name) || adjCells[1].name.includes("funnel"))
+				) {
+					let _puff = new Puff("D", { row: act_r + 1, col: act_c });
+				} else if (
+					adjCells[2] !== null && adjCells[2].hasOwnProperty('name') &&
+					(standard_behaviour.includes(adjCells[2].name) || adjCells[2].name.includes("funnel"))
+				) {
+					let _puff = new Puff("L", { row: act_r, col: act_c - 1 });
+				} else if (
+					adjCells[3] !== null && adjCells[3].hasOwnProperty('name') &&
+					(standard_behaviour.includes(adjCells[3].name) || adjCells[3].name.includes("funnel"))
+				) {
+					let _puff = new Puff("R", { row: act_r, col: act_c + 1 });
+				} else {
+					// Nowhere to propagate
+				}
+			};
+
+			activator_queue[unique_1]();
+			delete activator_queue[unique_1];
+		}
+
 			
-
-		//used for stomper
-       function steamSystem_main2(act_r, act_c, provider="") {
-		let unique_1 = unique(20);
-
-    activator_queue[unique_1] = function() {
-        const adjCells = adj(act_r, act_c);
-
-        // Additional checks for spike/lamp/launcher and crank behavior
-        const checkAndNullify = (cell, direction) => {
-            if (cell && cell.hasOwnProperty('name')) {
-                if (
-                    cell.name.includes('spike') || cell.name.includes('lamp') || 
-                    cell.name.includes('launcher')) {
-                    return null;
-                }
-
-				if((direction === 2 && cell.name.includes('valve') )|| (direction === 3 && cell.name.includes('valve') ))
-					return null;
-					if((direction === 2 && cell.name.includes('vent') )|| (direction === 3 && cell.name.includes('vent') ))
-					return null;
-                // Crank logic: allow vertical cranks below (1) and horizontal cranks left (2) or right (3)
-                if (cell.name.includes('crank')) {
-                    if (
-                        (direction === 1 && cell.flow === "vertical") || 
-                        (direction === 2 && cell.flow === "horizontal") ||
-                        (direction === 3 && cell.flow === "horizontal")
-                    ) {
-                        return cell;
-                    } else {
-                        return null;
-                    }
-                }
-            }
-            return cell;
-        };
-
-        adjCells[0] = checkAndNullify(adjCells[0], 0); // Up
-        adjCells[1] = checkAndNullify(adjCells[1], 1); // Down
-        adjCells[2] = checkAndNullify(adjCells[2], 2); // Left
-        adjCells[3] = checkAndNullify(adjCells[3], 3); // Right
-
-        // Log adjacent cells for debugging
-        adjCells.forEach((cell, index) => {
-            if (cell) {
-                console.log(`Adjacent ${index}: ${cell ? cell.name : "null"}`);
-            }
-        });
-
-        // Puff spawning with priority: Down (1), Left (2), Right (3), Never Up (0)
-        if (
-            adjCells[1] !== null && adjCells[1].hasOwnProperty('name') &&
-            (standard_behaviour.includes(adjCells[1].name) || adjCells[1].name.includes("funnel"))
-        ) {
-            // Spawn puff down
-            let _puff = new Puff("D", { row: act_r + 1, col: act_c });
-        } 
-        else if (
-            adjCells[2] !== null && adjCells[2].hasOwnProperty('name') &&
-            (standard_behaviour.includes(adjCells[2].name) || adjCells[2].name.includes("funnel"))
-        ) {
-            // Spawn puff left
-            let _puff = new Puff("L", { row: act_r, col: act_c - 1 });
-        } 
-        else if (
-            adjCells[3] !== null && adjCells[3].hasOwnProperty('name') &&
-            (standard_behaviour.includes(adjCells[3].name) || adjCells[3].name.includes("funnel"))
-        ) {
-            // Spawn puff right
-            let _puff = new Puff("R", { row: act_r, col: act_c + 1 });
-        } 
-        else {
-            // Nowhere to propagate to
-        }
-    }
-
-    activator_queue[unique_1]();
-	   }
-
-	
-	
-	
-	
+			
 	
 	
 	
@@ -3280,6 +3514,7 @@ if(this.distance_moved >= this.max_puff_distance){
 	
 	
 	//for engines
+	//right facing engine
 	 function steamSystem_main3(act_r, act_c) {        
 			let unique_1 = unique(20);
 			
@@ -3385,7 +3620,7 @@ if(this.distance_moved >= this.max_puff_distance){
 		
 		
 		
-		//left engine
+		//left facing engine
 		function steamSystem_main4(act_r, act_c) {        
 			let unique_1 = unique(20);
 			
@@ -3491,3 +3726,7 @@ if(this.distance_moved >= this.max_puff_distance){
 </script>
 </body>
 </html>
+
+
+
+<!--Created by MineDeath, Instagram: minedeath.gt, Discord: minedeath_ -->
