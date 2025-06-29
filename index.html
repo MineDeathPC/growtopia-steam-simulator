@@ -144,13 +144,13 @@
 <div class="fixed-text" style="display:block;">Created By: <i style="color:rgb(255, 195, 30);"><b>MineDeath </b></i></div>
 
 	<div id="loading-cont">
-		<div id="loading-text" >LOADING</div>
+		<div id="loading-text">LOADING SIMULATOR</div>
 			<video id="loading-video"  autoplay loop muted>
-				
 				<source src="assets/gear-vid.mp4" type="video/mp4">
-			  </video>
-<!-- end of all content-->
-</div>
+			  </video>	
+	</div>
+
+
 <input type="file" id="file-input" style="display:none;" onchange="loadFile(event)"/>
 <!-- wait for body to fully load-->
 <script src = "sweetalert.js"></script>
@@ -1099,7 +1099,8 @@ function toggleBlockCount() {
 		showLoad(4)
 
 	
-		window.addEventListener('orientationchange', function () {
+
+window.addEventListener('orientationchange', function () {
   console.log("Orientation changed to:", screen.orientation.angle);
   window.location.reload()
 });
