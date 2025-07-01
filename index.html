@@ -43,10 +43,11 @@
 
     <!-- Hint text for showing inventory -->
     <button id="toggle-hint" onclick="toggleInventory()" >Tap or press 'I' to open inventory</button>
+		<label id="steam_code_enabler"><input type="checkbox" id="steam_code_checkbox" style="position:relative;top:3px;"checked>steam code restrictions</label>
 	<h3 id="puff-counter" title="how many active steam puffs are present" >Active steam puffs: 0</h3>
 	<button id="block-counter-button" onclick="toggleBlockCount()"  title="how many blocks of each type are present on the grid">view block count</button>
 
-	<label id="steam_code_enabler"><input type="checkbox" id="steam_code_checkbox" style="position:relative;top:3px;"checked>steam code restrictions</label>
+
 	<div id="block-count-display" ><h2>block count [BETA]: </h2><br /><br /> </div>
 
     <!-- Toggle Grid Button -->
@@ -1215,6 +1216,7 @@ function pipeTextureManager() {
     if (gridData.flat().length == 0) {
         return;
     }
+	
 
     for (let row = 0; row < gridData.length; row++) {
         for (let col = 0; col < gridData[row].length; col++) {
@@ -1225,8 +1227,8 @@ function pipeTextureManager() {
                 let pipeAdj = {
                     U: row > 0 && gridData[row - 1][col] && gridData[row - 1][col].hasOwnProperty('name') && !excludedBlocks.includes(gridData[row - 1][col].name),
                     D: row < gridData.length - 1 && gridData[row + 1][col] && gridData[row + 1][col].hasOwnProperty('name') && !excludedBlocks.includes(gridData[row + 1][col].name),
-                    L: col > 0 && gridData[row][col - 1] && gridData[row][col - 1].hasOwnProperty('name') && !excludedBlocks.includes(gridData[row][col - 1].name),
-                    R: col < gridData[row].length - 1 && gridData[row][col + 1] && gridData[row][col + 1].hasOwnProperty('name') && !excludedBlocks.includes(gridData[row][col + 1].name)
+                    L: col > 0 && gridData[row][col - 1] && gridData[row][col - 1].hasOwnProperty('name') && !excludedBlocks.includes(gridData[row][col - 1].name)  && !gridData[row][col - 1].name.includes("vent"),
+                    R: col < gridData[row].length - 1 && gridData[row][col + 1] && gridData[row][col + 1].hasOwnProperty('name') && !excludedBlocks.includes(gridData[row][col + 1].name)  && !gridData[row][col + 1].name.includes("vent")
                 };
 
                 // Assign texture and update name based on neighbors
@@ -1573,8 +1575,8 @@ function removePipe(row, col) {
 					button.textContent = "▶️";
 
 					//controls activator button location
-					button.style.top = `${Math.floor(i / 100) * 41}px`;
-					button.style.left = `${(i % 100) * 41}px`;
+					button.style.top = `${Math.floor(i / 100)*40}px`;
+					button.style.left = `${(i % 100) * 40}px`;
 					
 					
 					
@@ -1712,8 +1714,8 @@ function removePipe(row, col) {
 					button.id = `activator-${i}`;
 					button.classList.add("activators");
 					button.textContent = "️🔄";
-					button.style.top = `${Math.floor(i / 100) * 41}px`;
-					button.style.left = `${(i % 100) * 41}px`;
+					button.style.top = `${Math.floor(i / 100)*40}px`;
+					button.style.left = `${(i % 100) * 40}px`;
 
 					button.addEventListener("click", () => {
 						if(multi_activator_toggle)
@@ -1746,8 +1748,8 @@ function removePipe(row, col) {
 					button.id = `activator-${i}`;
 					button.classList.add("activators");
 					button.textContent = "️🔘";
-					button.style.top = `${Math.floor(i / 100) * 41}px`;
-					button.style.left = `${(i % 100) * 41}px`;
+					button.style.top = `${Math.floor(i / 100)*40}px`;
+					button.style.left = `${(i % 100) * 40}px`;
 
 					// Add event listener to toggle the state
 					button.addEventListener("click", () => {
@@ -1776,8 +1778,8 @@ function removePipe(row, col) {
 					button.id = `activator-${i}`;
 					button.classList.add("activators");
 					button.textContent = "️⏮";
-					button.style.top = `${Math.floor(i / 100) * 41}px`;
-					button.style.left = `${(i % 100) * 41}px`;
+					button.style.top = `${Math.floor(i / 100)*40}px`;
+					button.style.left = `${(i % 100) * 40}px`;
 
 					// Add event listener to toggle the state
 					button.addEventListener("click", () => {

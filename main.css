@@ -115,14 +115,14 @@
 
   #steam_code_enabler{
 	color:white;
-	position:absolute;
+	position:relative;
+	z-index:10;   
 	top:110px;
 	font-size:0.8em;
-	z-index:0;
 	position:fixed;
 	background-color: rgba(0, 0, 0, 0.5); 
   	padding: 8px 12px;                 
-  	border-radius: 6px;                 
+  	border-radius: 6px;      
   }
 
 
@@ -343,6 +343,9 @@
   	background: none;
   	cursor    : pointer;
   	opacity   : 0.6;
+	z-index: 9;
+	margin:0;
+	padding:0;
   }
 
   .activators:hover {
